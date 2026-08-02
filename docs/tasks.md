@@ -225,10 +225,28 @@ into Runway/Veo manually). This milestone only adds video as an
 **input** type for brand guidelines / competitor refs, and adds real
 image generation for the shared reference image.
 
-- [ ] Extend `brand_file`/`competitor_file` upload in `frontend/app.py`
-      to accept image and video files, not just `.txt` (multi-file,
-      mixed types) — currently the "Images / Mood Board" field exists
-      but nothing ever reads it (see README known limitations)
+- [ ] Consolidate to two upload boxes total, each `file_count="multiple"`
+      accepting mixed types — `brand_file` and `competitor_file`. Drop
+      the separate generic "Images / Mood Board" field (currently
+      unused — nothing ever reads it, see README known limitations); a
+      server-side router inspects each uploaded file's extension and
+      dispatches to text-read / image-describe / video-frame-extract.
+      Accepted extensions: `.txt` (text), `.png`/`.jpg`/`.jpeg`/`.webp`/
+      `.gif` (image — GIF is accepted by OpenAI's vision input but only
+      its first frame is used, animated GIFs are flattened), `.mp4`/
+      `.mov`/`.webm` (video, decoded via ffmpeg so this list is just a
+      UI filter, not a hard codec limit)
+- [ ] Enforce size limits, rejected with a clear chat message (not a
+      silent truncation or a stack trace): text 200 KB/file (guideline
+      docs are meant to be short enough to summarize directly, no
+      chunking, per §3 — this just guards against something absurd);
+      image 8 MB/file (OpenAI's vision hard limit is 20 MB — 8 MB
+      leaves margin after ~33% base64 overhead); video 30s duration
+      (checked via `ffprobe`, matches the ≤30s clip spec in §3) plus a
+      50 MB file-size backstop so we don't run `ffmpeg` on something
+      huge before even checking duration; and 5 files max per upload
+      box (each image/video-frame is its own vision-model API call —
+      uncapped file count means uncapped cost/latency per run)
 - [ ] `backend/vision.py` (or similar): `describe_image(path) -> str`
       — base64-encode an image, call a vision-capable chat model
       (`gpt-4o-mini` supports vision) asking for a visual-style/mood
