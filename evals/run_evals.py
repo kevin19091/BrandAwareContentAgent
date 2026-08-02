@@ -20,21 +20,24 @@ from backend.pipeline_graph import (
     build_graph_before_checkpoint,
     make_initial_state,
 )
+from backend.uploads import process_uploads
 
 EVALS_DIR = Path(__file__).parent
 RESULTS_DIR = EVALS_DIR / "results"
 
 
-def load_text(rel_path: str | None) -> str:
-    if not rel_path:
-        return ""
-    return (EVALS_DIR / rel_path).read_text()
+def resolve_paths(rel_paths: list[str]) -> list[str]:
+    return [str(EVALS_DIR / p) for p in rel_paths]
 
 
 def run_example(example: dict) -> dict:
     session_assets = {
-        "brand_guidelines": load_text(example["brand_guidelines_file"]),
-        "competitor_refs": load_text(example["competitor_refs_file"]),
+        "brand_guidelines": process_uploads(
+            resolve_paths(example.get("brand_guidelines_files", [])), "Brand Guidelines"
+        ),
+        "competitor_refs": process_uploads(
+            resolve_paths(example.get("competitor_refs_files", [])), "Competitor / Inspiration Refs"
+        ),
     }
     state = make_initial_state(example["brief"], session_assets, example["hitl_mode"])
     config = {"configurable": {"thread_id": example["id"]}}

@@ -130,6 +130,25 @@ future work in CLAUDE.md §13. See `evals/README.md` for full methodology.
       still passed it. Evaluation's brand-alignment check doesn't verify
       generated copy names the correct brand. See `evals/README.md`
       Findings section for detail and suggested fix.
+- [x] **Extended after M7:** added 4 more golden examples
+      (`11_nike_multimodal`–`14_mamaearth_multimodal`) rerunning the
+      same brands/briefs against real Instagram video/images (via
+      `yt-dlp`) instead of text, to test M7's vision ingestion. Migrated
+      `golden_examples.json`'s file fields to lists
+      (`brand_guidelines_files`/`competitor_refs_files`) and switched
+      `run_evals.py` to call `backend.uploads.process_uploads` — the
+      same router the live app uses — instead of a bespoke text-file
+      loader. All 14 examples pass their structural criteria. Source
+      media lives in `evals/data/<brand>/instagram/`, gitignored (not
+      just per the original instruction but because downloaded
+      Instagram content is third-party copyrighted material) — examples
+      11-14 only run locally after re-downloading the same posts, not
+      reproducible from a fresh clone. Two more findings from this pass
+      in `evals/README.md`: the Nike/Adidas wrong-brand-name bug recurs
+      with zero text in the loop (video-only), and Mamaearth's
+      voice drifted toward "luxury/sophisticated" under single-video-only
+      brand inference, notably different from the text-researched
+      toxin-free/reassuring positioning.
 
 ## M3 — Test, Fix, Redeploy (Hour 6)
 
