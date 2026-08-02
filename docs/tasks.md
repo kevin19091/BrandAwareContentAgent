@@ -70,18 +70,30 @@ evaluation → output, hardcoded to the reference beverage-brand scenario.
 
 Goal: pipeline visible and controllable from the chat UI.
 
-- [ ] Wire file upload (guidelines PDF/text, brief, images) into Gradio
-      `ChatInterface`, pass into initial `AgentState`
-- [ ] Stream intermediate agent outputs to the chat as the graph runs
-      (token streaming + step-by-step status messages)
-- [ ] Rationale field on every agent output ("matches guideline
+- [x] Wire file upload into a `gr.Blocks` UI (switched from `ChatInterface`,
+      which can't host file inputs + a confirm button + a mode toggle
+      alongside the chat log), pass into initial `AgentState`. Brand
+      guidelines / competitor refs are `.txt` upload (not PDF — PDF text
+      extraction added no value at this scope); images are accepted and
+      passed through to `session_assets` but not analyzed (no vision
+      call in any agent, matches the MVP's text-only cut)
+- [x] Stream intermediate agent outputs to the chat as the graph runs —
+      step-by-step per-node status messages via `graph.stream(...,
+      stream_mode="updates")`. Not token-level streaming within a single
+      node's LLM call — `call_llm` returns a full JSON blob per node, not
+      a token stream, so streaming granularity is per-agent-step, not
+      per-token
+- [x] Rationale field on every agent output ("matches guideline
       preference for X" style), rendered inline in the chat
-- [ ] Single simplified "Continue" checkpoint after Strategy — two-step
-      UI flow (not a real graph `interrupt()`): show strategy output, wait
-      for user confirm/edit before Content Generation runs
-- [ ] `hitl_mode` step/auto toggle in the UI; auto mode auto-passes the
-      checkpoint unless eval already flagged something
-- [ ] Escalation path (2nd eval failure) surfaces as a clear message in
+- [x] Single simplified "Continue" checkpoint after Strategy — pipeline
+      is compiled as two separate graphs (`build_graph_before_checkpoint`,
+      `build_graph_after_checkpoint`) in `backend/pipeline_graph.py`, and
+      the UI runs them as two separate calls with the strategy state
+      handed off as a plain dict — not LangGraph's `interrupt()`/resume
+- [x] `hitl_mode` step/auto toggle in the UI; auto mode calls the same
+      `continue_pipeline` function immediately instead of waiting for a
+      button click — same code path either way, per §6
+- [x] Escalation path (2nd eval failure) surfaces as a clear message in
       chat, not a silent hang
 
 ## M3 — Test, Fix, Redeploy (Hour 6)

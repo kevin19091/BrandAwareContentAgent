@@ -244,31 +244,49 @@ def escalate_node(state: AgentState) -> dict:
     return {"escalated": True}
 
 
-def build_graph():
+# Split in two so the UI (M2) can pause for a human confirm checkpoint
+# between them without using LangGraph's interrupt()/resume machinery —
+# see docs/tasks.md M2. `run()` below just calls both back-to-back with
+# no pause, matching the M1 CLI's original all-in-one behavior.
+
+
+def build_graph_before_checkpoint():
+    """guardrail -> ingestion -> brand_dna -> competition_research -> strategy"""
     graph = StateGraph(AgentState)
     graph.add_node("guardrail", guardrail_node)
     graph.add_node("ingestion", ingestion_node)
     graph.add_node("brand_dna", brand_dna_node)
     graph.add_node("competition_research", competition_research_node)
     graph.add_node("strategy", strategy_node)
-    graph.add_node("content_generation", content_generation_node)
-    graph.add_node("evaluation", evaluation_node)
-    graph.add_node("increment_retry", increment_retry_node)
-    graph.add_node("escalate", escalate_node)
 
     graph.set_entry_point("guardrail")
     graph.add_conditional_edges("guardrail", route_after_guardrail, {"ingestion": "ingestion", END: END})
     graph.add_edge("ingestion", "brand_dna")
     graph.add_edge("brand_dna", "competition_research")
     graph.add_edge("competition_research", "strategy")
-    graph.add_edge("strategy", "content_generation")
+    graph.add_edge("strategy", END)
+
+    return graph.compile(checkpointer=MemorySaver())
+
+
+def build_graph_after_checkpoint():
+    """content_generation -> evaluation -> retry (back through strategy) / escalate"""
+    graph = StateGraph(AgentState)
+    graph.add_node("content_generation", content_generation_node)
+    graph.add_node("evaluation", evaluation_node)
+    graph.add_node("increment_retry", increment_retry_node)
+    graph.add_node("retry_strategy", strategy_node)
+    graph.add_node("escalate", escalate_node)
+
+    graph.set_entry_point("content_generation")
     graph.add_edge("content_generation", "evaluation")
     graph.add_conditional_edges(
         "evaluation",
         route_after_evaluation,
         {END: END, "retry": "increment_retry", "escalate": "escalate"},
     )
-    graph.add_edge("increment_retry", "strategy")
+    graph.add_edge("increment_retry", "retry_strategy")
+    graph.add_edge("retry_strategy", "content_generation")
     graph.add_edge("escalate", END)
 
     return graph.compile(checkpointer=MemorySaver())
@@ -293,16 +311,14 @@ REFERENCE_SESSION_ASSETS = {
 }
 
 
-def run(
-    raw_input: str = REFERENCE_BRIEF,
+def make_initial_state(
+    raw_input: str,
     session_assets: dict | None = None,
     hitl_mode: str = "auto",
-    thread_id: str = "demo",
 ) -> AgentState:
-    app = build_graph()
-    initial_state: AgentState = {
+    return {
         "raw_input": raw_input,
-        "session_assets": session_assets or REFERENCE_SESSION_ASSETS,
+        "session_assets": session_assets or {},
         "hitl_mode": hitl_mode,
         "guardrail_passed": True,
         "guardrail_reason": "",
@@ -315,7 +331,21 @@ def run(
         "retry_count": 0,
         "escalated": False,
     }
-    return app.invoke(initial_state, config={"configurable": {"thread_id": thread_id}})
+
+
+def run(
+    raw_input: str = REFERENCE_BRIEF,
+    session_assets: dict | None = None,
+    hitl_mode: str = "auto",
+    thread_id: str = "demo",
+) -> AgentState:
+    state = make_initial_state(raw_input, session_assets or REFERENCE_SESSION_ASSETS, hitl_mode)
+    config = {"configurable": {"thread_id": thread_id}}
+
+    state = build_graph_before_checkpoint().invoke(state, config)
+    if not state["guardrail_passed"]:
+        return state
+    return build_graph_after_checkpoint().invoke(state, config)
 
 
 if __name__ == "__main__":
