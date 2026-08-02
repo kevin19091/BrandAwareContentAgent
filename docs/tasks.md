@@ -31,34 +31,40 @@ exists.
 Goal: one full run end to end, guardrail → ingestion → 4 agents →
 evaluation → output, hardcoded to the reference beverage-brand scenario.
 
-- [ ] Define `AgentState` (LangGraph state schema): raw input, session
+- [x] Define `AgentState` (LangGraph state schema): raw input, session
       assets, brand_profile, competition_insights, strategy, content (per
       channel), eval_result, retry_count, hitl_mode
-- [ ] Input guardrail node: single LLM call/classifier for prompt
+- [x] Input guardrail node: single LLM call/classifier for prompt
       injection + out-of-scope detection; on fail → stop, no retry
-- [ ] Ingestion node: routing logic — session assets present →
+- [x] Ingestion node: routing logic — session assets present →
       "session" path; else "none" path (library routing deferred to M6);
       stub library branch to return "no match" for now
-- [ ] Brand DNA agent: summarizes uploaded brand guidelines/brief
+- [x] Brand DNA agent: summarizes uploaded brand guidelines/brief
       directly into a structured brand profile (no chunking/embedding)
-- [ ] Competition Research agent: given no static library yet (M1), runs
+- [x] Competition Research agent: given no static library yet (M1), runs
       on session-provided competitor/inspiration assets only, or returns
       "no external input" — wired for the M6 library swap-in later
-- [ ] Strategy agent: brand DNA + competition insights + brief → one big
+- [x] Strategy agent: brand DNA + competition insights + brief → one big
       idea + message architecture
-- [ ] Content Generation agent: strategy → fan-out to Instagram (caption +
+- [x] Content Generation agent: strategy → fan-out to Instagram (caption +
       image prompt + motion prompt) and TikTok (beat-by-beat script,
       reusing the same image/motion prompt)
-- [ ] Evaluation agent: brand alignment check + harmful/unauthorized
+- [x] Evaluation agent: brand alignment check + harmful/unauthorized
       content check (including unsubstantiated claims) against brief/brand
       assets
-- [ ] Retry/escalate edges: capped 1 retry back to Strategy on eval
+- [x] Retry/escalate edges: capped 1 retry back to Strategy on eval
       failure; 2nd failure → escalate flag (human confirmation handled in
       M2) → END
-- [ ] Wire full `StateGraph` in `backend/pipeline_graph.py`; `MemorySaver`
+- [x] Wire full `StateGraph` in `backend/pipeline_graph.py`; `MemorySaver`
       checkpointer
-- [ ] Manual end-to-end run via script/CLI (before wiring into Gradio) to
+- [x] Manual end-to-end run via script/CLI (before wiring into Gradio) to
       confirm the graph completes for the reference scenario
+- [x] Session/thread state: `AgentState` carried via the `MemorySaver`
+      checkpointer keyed by a `thread_id`; each pipeline run is a fresh
+      single-shot state, not a multi-turn conversation — no chat history
+      is fed to agents (there's nothing to feed yet, since M0's chat UI
+      doesn't call the pipeline). Gradio wiring to a per-session
+      `thread_id` happens in M2.
 
 ## M2 — Streaming, Explainability, Confirm Checkpoint (Hour 5)
 

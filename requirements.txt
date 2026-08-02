@@ -1,2 +1,4 @@
 gradio>=4.0
 python-dotenv
+langgraph>=0.2
+langchain-openai
