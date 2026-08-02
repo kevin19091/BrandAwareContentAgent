@@ -4,12 +4,17 @@ Agentic system that ingests a brand's assets, synthesizes a brand
 understanding, and generates brand-aligned content across channels. Full
 design and scope: [CLAUDE.md](CLAUDE.md). Build plan: [docs/tasks.md](docs/tasks.md).
 
-**Current status:** M0–M2 are done. The full pipeline (guardrail →
+**Live demo:** https://brandawarecontentagent.onrender.com (password-
+gated — ask for credentials). Free-tier Render host, so it cold-starts
+after ~15 min idle; the first request after that can take 30-60s.
+
+**Current status:** M0–M3 are done. The full pipeline (guardrail →
 ingestion → brand DNA → competition research → strategy → content
 generation → evaluation, with retry/escalate) is wired into a
 password-gated Gradio UI with file upload, step-by-step streaming,
 inline rationale, a confirm checkpoint after Strategy, and a step/auto
-HITL toggle.
+HITL toggle. Verified working against the live deploy, see
+docs/tasks.md M3.
 
 ## Prerequisites
 
