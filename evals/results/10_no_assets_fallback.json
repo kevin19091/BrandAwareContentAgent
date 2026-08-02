@@ -1,0 +1,72 @@
+{
+  "raw_input": "Launch a campaign for new parents introducing a toxin-free baby-care range.",
+  "session_assets": {
+    "brand_guidelines": "",
+    "competitor_refs": ""
+  },
+  "hitl_mode": "auto",
+  "guardrail_passed": true,
+  "guardrail_reason": "no injection or out-of-scope signal detected",
+  "ingestion_source": "none",
+  "brand_profile": {
+    "voice": "energetic, inclusive, unapologetically bold",
+    "pillars": [
+      "freedom",
+      "self-expression",
+      "adventure"
+    ],
+    "visual_style": "high-contrast urban photography, saturated summer palette",
+    "rationale": "Derived from brand guidelines section on tone-of-voice and visual identity (mock)."
+  },
+  "competition_insights": {
+    "techniques": [
+      "UGC-style raw video",
+      "bold color blocking",
+      "meme-adjacent captions"
+    ],
+    "gap": "competitors lean nostalgic; brief calls for forward-looking energy",
+    "rationale": "Derived from competitor/inspiration assets provided in session (mock)."
+  },
+  "strategy": {
+    "big_idea": "Your Summer, Unfiltered",
+    "message_architecture": [
+      "Hook: freedom is a flavor",
+      "Support: self-expression, no permission needed",
+      "CTA: grab one, go find your adventure"
+    ],
+    "rationale": "Combines brand pillars (freedom, self-expression, adventure) with a market gap vs. nostalgic competitor tone (mock)."
+  },
+  "content": {
+    "reference_image": {
+      "prompt_used": "Gen-Z friends laughing on a rooftop at golden hour, bold saturated colors, motion blur, beverage in frame"
+    },
+    "motion_prompt": "Handheld whip-pan across the group, 3-second hold on product, quick cut to skyline, 8s total",
+    "style_tags": [
+      "high-contrast",
+      "saturated",
+      "urban",
+      "golden-hour"
+    ],
+    "instagram": {
+      "caption": "Your summer, unfiltered. No permission needed.",
+      "brand_alignment_note": "Matches brand pillar 'self-expression' from brand profile (mock)."
+    },
+    "tiktok": {
+      "shot_list": [
+        "0-2s: rooftop wide shot, group laughing",
+        "2-5s: whip-pan to product in hand",
+        "5-8s: quick cuts of skyline + text overlay 'your summer, unfiltered'"
+      ],
+      "brand_alignment_note": "Reuses the shared reference image and motion prompt; paced for TikTok attention span (mock)."
+    }
+  },
+  "eval_result": {
+    "passed": true,
+    "brand_alignment": "on-brand: matches pillars from brand profile",
+    "harmful_content_flag": false,
+    "reason": "no issues found"
+  },
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": true
+}

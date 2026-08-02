@@ -1,0 +1,76 @@
+{
+  "raw_input": "Launch a new-season campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
+  "session_assets": {
+    "brand_guidelines": "Source: Nike \"Why Do It?\" campaign (2026 relaunch of \"Just Do It\"), CMO Nicole Graham\npublic remarks; MarketingDive, RetailDive, WWD coverage, July 2026.\n\nVoice: bold, motivational, unflinching. Speaks to the athlete in everyone, not\njust elite performers. Comfortable sitting with doubt and pressure rather than\npapering over it \u2014 the 2026 \"Why Do It?\" reframing explicitly leans into\nsociopolitical and economic pressure young athletes feel, then answers it with\nbelief and forward motion rather than denial.\n\nCore message: effort and the decision to begin matter more than the outcome.\nTyler, the Creator's narration frames it directly: \"You could give everything\nyou have and still lose... but what if you don't?\" The brand's chief marketing\nofficer describes \"Just Do It\" as \"a spirit that lives in every heartbeat of\nsport... the belief that, together, we can inspire, unite and elevate\nourselves beyond what we thought possible.\"\n\nVisual style: slow-motion hero footage of athletes at high-stakes moments,\nglobal sports stars (Alcaraz, Barkley, Clark, LeBron, Vini Jr.) used as\nproof-points, cinematic and epic in tone, distributed across live sports,\nsocial, streaming, cinema, and out-of-home.\n\nPillars: courage, self-belief, potential, unity through sport.\n",
+    "competitor_refs": "Source: Adidas \"You Got This\" campaign analysis; BrandVM, BusinessModelAnalyst,\ncompanieshistory.com, 2026 coverage.\n\nAdidas' primary multi-year platform \"You Got This\" (launched Feb 2024,\nrunning through 2026) takes a softer, more supportive angle than Nike's\nindividual-potential framing \u2014 it addresses the pressure that drains joy from\nsport, and reframes support networks (parents, coaches, friends) as part of an\nathlete's success rather than centering the lone athlete against the odds.\nChapter two, \"We All Need Someone to Make Us Believe,\" leans into a\n\"Sideline Effect\" sub-theme: the people cheering you on matter as much as you\ndo.\n\nTechnique gap vs. Nike: Adidas' softer, communal-support tone is a\ndifferentiator worth noting when writing Nike-adjacent copy \u2014 Nike's brief\nshould stay individual-facing (\"what if you don't lose\") rather than drifting\ninto Adidas' communal-support territory, to keep messaging distinct from the\ncategory's other major player.\n"
+  },
+  "hitl_mode": "auto",
+  "guardrail_passed": true,
+  "guardrail_reason": "The prompt is focused on generating brand content for a campaign targeting young amateur athletes, aligning with marketing objectives.",
+  "ingestion_source": "session",
+  "brand_profile": {
+    "voice": "bold, motivational, unflinching",
+    "pillars": [
+      "courage",
+      "self-belief",
+      "potential",
+      "unity through sport"
+    ],
+    "visual_style": "slow-motion hero footage of athletes at high-stakes moments, featuring global sports stars, cinematic and epic in tone",
+    "rationale": "The voice reflects the brand's emphasis on speaking to the athlete in everyone and embracing pressure (\"speaks to the athlete in everyone, not just elite performers\"). The pillars are derived from the brand's focus on effort and belief in oneself (\"effort and the decision to begin matter more than the outcome\"), and the visual style showcases high-stakes athletic moments and global stars as proof-points."
+  },
+  "competition_insights": {
+    "techniques": [
+      "Soft and supportive messaging",
+      "Focus on community and support networks",
+      "Emphasis on the importance of cheering and encouragement"
+    ],
+    "gap": "Nike's messaging remains individual-facing and competitive, while Adidas focuses on communal support and emotional well-being.",
+    "rationale": "Adidas differentiates itself by addressing the emotional pressures in sports and highlighting the role of support systems, which contrasts with Nike's focus on individual achievement, allowing both brands to carve out distinct identities."
+  },
+  "strategy": {
+    "big_idea": "Celebrate the Courage to Try: Every Effort Counts",
+    "message_architecture": [
+      "Embrace the effort, celebrate the journey",
+      "Courage is the first step; self-belief fuels the path",
+      "Your potential is limitless; every attempt is a victory",
+      "Unity through sport: Together we rise, together we strive"
+    ],
+    "rationale": "This big idea leverages the brand's bold and motivational voice to empower young amateur athletes who feel judged. By reframing effort as something worthy of celebration, it aligns with the brand's pillars of courage, self-belief, and unity, while also addressing the gap in competition insights by moving away from individual achievement and instead fostering a sense of community and support."
+  },
+  "content": {
+    "reference_image": {
+      "prompt_used": "Cinematic slow-motion footage of diverse athletes in high-stakes moments, showcasing determination and effort, with an epic backdrop that emphasizes courage and unity through sport.",
+      "motion_prompt": "Slow-motion sequences highlighting athletes in moments of intense focus and effort, capturing their emotions and the electric atmosphere of competition.",
+      "style_tags": [
+        "cinematic",
+        "epic",
+        "slow-motion",
+        "motivational",
+        "diverse"
+      ]
+    },
+    "instagram": {
+      "caption": "Every effort counts, and every journey deserves to be celebrated. \ud83d\udcaa\u2728 Embrace the courage to try and let your potential shine! #CourageToTry #CelebrateEffort #TogetherWeRise",
+      "brand_alignment_note": "Aligns with the brand's pillars of courage and unity by encouraging community support among young athletes."
+    },
+    "tiktok": {
+      "shot_list": [
+        "Athlete warming up, showing focus and determination",
+        "Slow-motion footage of an athlete competing, with expressions of effort and struggle",
+        "Close-ups of teammates supporting each other, capturing moments of encouragement",
+        "Final shot of athletes celebrating together, embodying unity and joy"
+      ],
+      "brand_alignment_note": "Reflects the brand's motivational voice and emphasis on effort over outcome, fostering a sense of community."
+    }
+  },
+  "eval_result": {
+    "passed": true,
+    "brand_alignment": "The content aligns well with the brand's voice, pillars, and visual style. It emphasizes courage, unity, and effort, resonating with the motivational and bold tone of the brand.",
+    "harmful_content_flag": false,
+    "reason": ""
+  },
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": true
+}

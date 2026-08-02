@@ -1,0 +1,78 @@
+{
+  "raw_input": "Launch a campaign for new parents introducing a toxin-free baby-care range, emphasizing ingredient transparency and safety.",
+  "session_assets": {
+    "brand_guidelines": "Source: Mamaearth brand-building coverage; Medium (Dhananjay Mittal),\nStartupTalky, Latterly.org, Markhub24, 2026 analyses.\n\nPositioning: natural, effective, affordable personal care for\nhealth-conscious families \u2014 built on ingredient transparency in a market\nwhere consumers increasingly want to know exactly what's in the product\nbefore it touches their (or their baby's) skin.\n\nCore promise: toxin-free. No parabens, sulfates, or synthetic fragrances,\nconsistently communicated as \"No Nasties.\" Cruelty-free certified,\neco-friendly packaging. Purpose is woven into product, not bolted on as CSR \u2014\nthe \"Plant Goodness Project\" plants a tree per purchase.\n\nVoice: honest, reassuring, mom-to-mom rather than corporate-to-consumer.\nSpeaks to the anxiety of a new or health-conscious parent scanning an\ningredient label, and answers it plainly rather than with jargon.\n\nAudience: health-conscious families and eco-conscious buyers, originally\nbuilt around new-parent trust.\n\nPillars: toxin-free/ingredient transparency, safety and honesty, affordability\nwithout compromise, environmental responsibility (tree-planting, eco\npackaging).\n",
+    "competitor_refs": "Source: Plum Goodness brand coverage; Indian Retailer (D2C 100 series),\nValueForStartups, LinkedIn, 2026.\n\nPlum Goodness (founded 2013) is India's first 100% vegan beauty brand,\nPETA-certified cruelty-free, formulated around \"good science\" \u2014 natural\nnutrients plus research-backed actives, in recyclable packaging. Its ethos\nis \"goodness that delivers\": ethics (vegan, cruelty-free) as the primary\npurchase trigger, backed by science-first credibility rather than pure\ningredient storytelling.\n\nTechnique gap vs. Mamaearth: Plum leads with ethical-identity positioning\n(vegan, cruelty-free as a stance); Mamaearth leads with parental-safety\npositioning (toxin-free as reassurance for a health-conscious family).\nMamaearth-adjacent copy should keep the safety/reassurance framing distinct\nfrom Plum's ethics-forward vegan identity.\n"
+  },
+  "hitl_mode": "auto",
+  "guardrail_passed": true,
+  "guardrail_reason": "Valid request for brand content generation.",
+  "ingestion_source": "session",
+  "brand_profile": {
+    "voice": "honest, reassuring, mom-to-mom rather than corporate-to-consumer",
+    "pillars": [
+      "toxin-free/ingredient transparency",
+      "safety and honesty",
+      "affordability without compromise",
+      "environmental responsibility (tree-planting, eco packaging)"
+    ],
+    "visual_style": "natural and wholesome, emphasizing eco-friendliness and family care",
+    "rationale": "The voice is described as 'honest, reassuring, mom-to-mom rather than corporate-to-consumer' which focuses on addressing the concerns of health-conscious families. The pillars are drawn from the core promise of being 'toxin-free' and the emphasis on 'ingredient transparency', 'safety and honesty', 'affordability without compromise', and 'environmental responsibility'."
+  },
+  "competition_insights": {
+    "techniques": [
+      "Ethical-identity positioning",
+      "Science-backed product claims",
+      "Recyclable packaging as a selling point",
+      "PETA certification for credibility"
+    ],
+    "gap": "Mamaearth primarily emphasizes parental safety and toxin-free assurances, while Plum Goodness focuses on ethical considerations like veganism and cruelty-free practices.",
+    "rationale": "By leading with ethical-identity positioning, Plum Goodness differentiates itself in the beauty market, appealing to consumers who prioritize values over just product safety. This approach can attract a niche audience looking for brands that align with their ethical beliefs, while Mamaearth's focus on parental safety addresses a different consumer concern."
+  },
+  "strategy": {
+    "big_idea": "Nurture Naturally: The Honest Choice for Your Baby's Care",
+    "message_architecture": [
+      "Toxin-free ingredients for peace of mind",
+      "Ingredient transparency because you deserve to know",
+      "Safety and honesty in every product",
+      "Affordable care that doesn\u2019t compromise on quality",
+      "Eco-friendly practices that protect your baby's future"
+    ],
+    "rationale": "The big idea, 'Nurture Naturally,' encapsulates the essence of the brand's offerings by combining safety, transparency, and environmental responsibility, making it relatable for new parents. The message architecture aligns with the brand's voice and pillars, focusing on honesty and reassurance while highlighting the unique selling points that differentiate it from competitors, particularly the emphasis on ingredient transparency and affordability."
+  },
+  "content": {
+    "reference_image": {
+      "prompt_used": "A serene, natural setting featuring a loving mother gently cradling her baby, surrounded by plants and eco-friendly products. The scene emphasizes warmth, care, and safety, showcasing the brand's toxin-free ingredients and commitment to environmental responsibility.",
+      "motion_prompt": "The camera slowly pans across the scene, capturing the gentle interaction between mother and baby while highlighting the eco-friendly products in the background, creating a soothing and nurturing atmosphere.",
+      "style_tags": [
+        "natural",
+        "wholesome",
+        "eco-friendly",
+        "family care",
+        "soft colors"
+      ]
+    },
+    "instagram": {
+      "caption": "Nurture Naturally with love and honesty \ud83c\udf3f\ud83d\udc9a Our toxin-free products ensure your baby's care is safe, affordable, and kind to the planet. Because every parent deserves peace of mind. #NurtureNaturally #HonestCare #EcoFriendly",
+      "brand_alignment_note": "The caption reflects the brand's voice and pillars, emphasizing safety, transparency, and eco-friendliness in a mom-to-mom tone."
+    },
+    "tiktok": {
+      "shot_list": [
+        "Close-up of the mother smiling at her baby",
+        "Pan over eco-friendly products on a table",
+        "Wide shot of the mother and baby in the natural setting",
+        "Transition to a shot of the baby playing safely with products"
+      ],
+      "brand_alignment_note": "The shot list emphasizes the nurturing relationship and highlights eco-friendly products, aligning with the brand's core values of safety and ingredient transparency."
+    }
+  },
+  "eval_result": {
+    "passed": true,
+    "brand_alignment": "The content aligns well with the brand voice and pillars, emphasizing safety, transparency, and eco-friendliness in a nurturing, mom-to-mom tone.",
+    "harmful_content_flag": false,
+    "reason": ""
+  },
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": true
+}

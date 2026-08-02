@@ -1,0 +1,77 @@
+{
+  "raw_input": "Launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
+  "session_assets": {
+    "brand_guidelines": "Source: Fabindia brand/heritage coverage; Creative Brands Mag, Latterly.org,\nMarketing Monk, 4AM World, Osum, 2026 analyses.\n\nHeritage: founded 1960 by John Bissell to connect India's handwoven textile\nand craft traditions with a modern retail audience. Today works with 55,000+\nartisans and 12,000+ farmers through community-based enterprises.\n\nPositioning: blends old and new \u2014 traditional Indian craftsmanship read\nthrough a contemporary lifestyle lens, not a museum-piece framing of\nheritage. Core strength is authenticity: products carry a real, traceable\nstory of the artisans and materials behind them, not a generic \"ethnic wear\"\nlabel.\n\nVoice: warm, rooted, unhurried \u2014 closer to storytelling about people and\nplace than to fast-fashion urgency. Sustainability is structural (natural\nmaterials, long-life design, fair artisan livelihoods) rather than a\nmarketing overlay.\n\nAudience: middle-to-upper-class Indian consumers plus diaspora/international\nbuyers seeking authentic, sustainably made Indian goods \u2014 currently also\nexpanding into modern western wear (the \"Fabels\" line) without abandoning\nthe heritage-craft core.\n\nPillars: artisan authenticity, tradition-meets-contemporary, sustainability\nas structure not slogan, storytelling over hard-sell.\n",
+    "competitor_refs": "Source: BlueStone brand strategy coverage; StartupTalky, Retail Jeweller\nIndia, Inc42, MBASkool, Storyboard18, 2026.\n\nBlueStone (founded Bangalore, 2011) is India's digital-first fine-jewellery\nbrand, built around lifestyle jewellery bought for work, gifting, and\nself-expression rather than the traditional wedding/investment-led purchase\noccasion. It leans hard into modern, digital-native positioning \u2014 360-degree\ncampaigns like \"Big Gold Upgrade\" and #ThreesToOne run across performance\nmarketing, influencer content, and BTL, aimed at a fashion-and-aspiration\nbuyer rather than a heritage buyer.\n\nTechnique gap vs. Fabindia: BlueStone sells modernity and digital\nconvenience as the aspiration; Fabindia sells rootedness and artisan\nauthenticity as the aspiration. Fabindia-adjacent copy can borrow BlueStone's\noccasion-diversity idea (product for everyday self-expression, not just\nfestive/heritage occasions) without borrowing its digital-modernity voice.\n"
+  },
+  "hitl_mode": "auto",
+  "guardrail_passed": true,
+  "guardrail_reason": "Valid request for brand/marketing content generation.",
+  "ingestion_source": "session",
+  "brand_profile": {
+    "voice": "warm, rooted, unhurried \u2014 closer to storytelling about people and place than to fast-fashion urgency",
+    "pillars": [
+      "artisan authenticity",
+      "tradition-meets-contemporary",
+      "sustainability as structure not slogan",
+      "storytelling over hard-sell"
+    ],
+    "visual_style": "blends traditional Indian craftsmanship with contemporary lifestyle elements, avoiding a museum-piece framing",
+    "rationale": "The voice is derived from the description of Fabindia's communication style, emphasizing warmth and storytelling (\"warm, rooted, unhurried\"). The pillars reflect the brand's core values and positioning, highlighting artisan authenticity, the blend of tradition and modernity, structural sustainability, and a preference for storytelling (\"artisan authenticity, tradition-meets-contemporary, sustainability as structure not slogan, storytelling over hard-sell\"). The visual style stems from the positioning that combines traditional craftsmanship with contemporary aesthetics (\"blends old and new\")."
+  },
+  "competition_insights": {
+    "techniques": [
+      "360-degree campaigns",
+      "Influencer marketing",
+      "Performance marketing",
+      "Below-the-line (BTL) marketing"
+    ],
+    "gap": "Fabindia's focus on rootedness and artisan authenticity",
+    "rationale": "By incorporating BlueStone's approach to occasion-diversity and modern self-expression, Fabindia can broaden its appeal while maintaining its unique brand voice."
+  },
+  "strategy": {
+    "big_idea": "Rediscover the soul of India this festive season with handcrafted textiles that tell the stories of our artisans.",
+    "message_architecture": [
+      "Celebrate the artisans behind each piece, highlighting their craftsmanship and heritage.",
+      "Emphasize the fusion of traditional designs with contemporary styles for modern urban shoppers.",
+      "Communicate sustainability not just as a trend but as a foundational aspect of our practices.",
+      "Share heartfelt narratives that connect consumers with the people and places behind the products."
+    ],
+    "rationale": "This big idea aligns with Fabindia's warm and storytelling voice while addressing the competition's techniques by focusing on artisan authenticity and modern self-expression. It bridges the gap by inviting urban Indian shoppers to engage with tradition in a contemporary context, making each purchase a meaningful connection to India's cultural heritage."
+  },
+  "content": {
+    "reference_image": {
+      "prompt_used": "A vibrant market scene showcasing artisans weaving and crafting textiles, with colorful handcrafted fabrics displayed prominently, blending traditional Indian craftsmanship with modern urban style.",
+      "motion_prompt": "The camera pans across the market, focusing on artisans at work, highlighting their hands and the intricate details of the fabrics, transitioning to urban settings where these textiles are being worn by diverse individuals.",
+      "style_tags": [
+        "artisan authenticity",
+        "traditional craftsmanship",
+        "modern style",
+        "sustainable fashion",
+        "storytelling"
+      ]
+    },
+    "instagram": {
+      "caption": "This festive season, rediscover the soul of India through our handcrafted textiles. Each piece tells a story woven by the hands of skilled artisans, blending tradition with contemporary flair. \ud83c\udf3c\u2728 #Fabindia #ArtisanStories #SustainableFashion",
+      "brand_alignment_note": "The caption emphasizes artisan stories and the blend of tradition with modernity, aligning with Fabindia's warm storytelling voice."
+    },
+    "tiktok": {
+      "shot_list": [
+        "Close-up of artisans weaving fabrics, showcasing the intricate details.",
+        "Wide shot of the vibrant market filled with colorful textiles.",
+        "Transition to urban settings, showing individuals wearing the textiles in everyday life.",
+        "Final shot of a group enjoying a festive gathering, all wearing the handcrafted pieces."
+      ],
+      "brand_alignment_note": "The shot list captures the essence of artisan craftsmanship and its connection to modern life, reflecting Fabindia's commitment to storytelling and sustainability."
+    }
+  },
+  "eval_result": {
+    "passed": true,
+    "brand_alignment": "The content aligns well with Fabindia's brand profile, emphasizing storytelling, artisan authenticity, and the blend of traditional craftsmanship with modern style, while maintaining a warm and unhurried voice.",
+    "harmful_content_flag": false,
+    "reason": ""
+  },
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": true
+}

@@ -96,6 +96,30 @@ Goal: pipeline visible and controllable from the chat UI.
 - [x] Escalation path (2nd eval failure) surfaces as a clear message in
       chat, not a silent hang
 
+## Evals — golden response sheet (ad hoc, not in the original 8-hour plan)
+
+An early hand-built version of the evaluation framework flagged as
+future work in CLAUDE.md §13. See `evals/README.md` for full methodology.
+
+- [x] 10 golden examples across 4 real brands (Nike, Patagonia — top
+      tier; Fabindia, Mamaearth — mid tier), researched via web search,
+      covering happy path (incl. 2 in step mode), guardrail reject,
+      eval-fail retry, eval-fail escalate, and no-assets ingestion
+      fallback
+- [x] `evals/run_evals.py` — runs each example through the real pipeline
+      (`backend.pipeline_graph`) and grades structural criteria
+      (guardrail_passed, ingestion_source, eval_passed, escalated,
+      retry_count) — all 10 pass
+- [x] `evals/build_sheet.py` — generates `evals/golden_examples.md`
+      (the human-readable golden response sheet) from captured results
+- [ ] **Bug found via eval, not yet fixed:** `02_nike_happy_step` — with
+      competitor info in context, the real Content Generation output
+      named the competitor (Adidas) instead of the brand being generated
+      for (`#AdidasUnity` in a Nike Instagram caption), and Evaluation
+      still passed it. Evaluation's brand-alignment check doesn't verify
+      generated copy names the correct brand. See `evals/README.md`
+      Findings section for detail and suggested fix.
+
 ## M3 — Test, Fix, Redeploy (Hour 6)
 
 Goal: full flow verified against the live deploy before going offline.

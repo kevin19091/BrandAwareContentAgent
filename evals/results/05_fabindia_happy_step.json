@@ -1,0 +1,79 @@
+{
+  "raw_input": "Launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
+  "session_assets": {
+    "brand_guidelines": "Source: Fabindia brand/heritage coverage; Creative Brands Mag, Latterly.org,\nMarketing Monk, 4AM World, Osum, 2026 analyses.\n\nHeritage: founded 1960 by John Bissell to connect India's handwoven textile\nand craft traditions with a modern retail audience. Today works with 55,000+\nartisans and 12,000+ farmers through community-based enterprises.\n\nPositioning: blends old and new \u2014 traditional Indian craftsmanship read\nthrough a contemporary lifestyle lens, not a museum-piece framing of\nheritage. Core strength is authenticity: products carry a real, traceable\nstory of the artisans and materials behind them, not a generic \"ethnic wear\"\nlabel.\n\nVoice: warm, rooted, unhurried \u2014 closer to storytelling about people and\nplace than to fast-fashion urgency. Sustainability is structural (natural\nmaterials, long-life design, fair artisan livelihoods) rather than a\nmarketing overlay.\n\nAudience: middle-to-upper-class Indian consumers plus diaspora/international\nbuyers seeking authentic, sustainably made Indian goods \u2014 currently also\nexpanding into modern western wear (the \"Fabels\" line) without abandoning\nthe heritage-craft core.\n\nPillars: artisan authenticity, tradition-meets-contemporary, sustainability\nas structure not slogan, storytelling over hard-sell.\n",
+    "competitor_refs": "Source: BlueStone brand strategy coverage; StartupTalky, Retail Jeweller\nIndia, Inc42, MBASkool, Storyboard18, 2026.\n\nBlueStone (founded Bangalore, 2011) is India's digital-first fine-jewellery\nbrand, built around lifestyle jewellery bought for work, gifting, and\nself-expression rather than the traditional wedding/investment-led purchase\noccasion. It leans hard into modern, digital-native positioning \u2014 360-degree\ncampaigns like \"Big Gold Upgrade\" and #ThreesToOne run across performance\nmarketing, influencer content, and BTL, aimed at a fashion-and-aspiration\nbuyer rather than a heritage buyer.\n\nTechnique gap vs. Fabindia: BlueStone sells modernity and digital\nconvenience as the aspiration; Fabindia sells rootedness and artisan\nauthenticity as the aspiration. Fabindia-adjacent copy can borrow BlueStone's\noccasion-diversity idea (product for everyday self-expression, not just\nfestive/heritage occasions) without borrowing its digital-modernity voice.\n"
+  },
+  "hitl_mode": "step",
+  "guardrail_passed": true,
+  "guardrail_reason": "Valid request for brand content generation related to a festive-season campaign.",
+  "ingestion_source": "session",
+  "brand_profile": {
+    "voice": "warm, rooted, unhurried \u2014 closer to storytelling about people and place than to fast-fashion urgency",
+    "pillars": [
+      "artisan authenticity",
+      "tradition-meets-contemporary",
+      "sustainability as structure not slogan",
+      "storytelling over hard-sell"
+    ],
+    "visual_style": "a blend of traditional Indian craftsmanship with a contemporary lifestyle aesthetic",
+    "rationale": "The brand emphasizes its heritage of connecting handwoven textile and craft traditions with modern retail, focusing on authenticity, sustainability, and storytelling, as seen in the positioning and voice descriptions."
+  },
+  "competition_insights": {
+    "techniques": [
+      "360-degree campaigns",
+      "Influencer content",
+      "Performance marketing",
+      "Below-the-line (BTL) marketing",
+      "Occasion-diversity messaging"
+    ],
+    "gap": "Fabindia can adopt BlueStone's idea of promoting jewellery for everyday self-expression and modern occasions, rather than solely for traditional or festive purposes.",
+    "rationale": "By leveraging BlueStone's successful approach to positioning jewellery as part of lifestyle and self-expression, Fabindia can expand its appeal to a broader audience while maintaining its core brand values of rootedness and authenticity."
+  },
+  "strategy": {
+    "big_idea": "Celebrate the Art of Tradition: A Festive Journey through Handcrafted Textiles",
+    "message_architecture": [
+      "Rediscover the stories woven into every thread.",
+      "Experience the harmony of tradition and contemporary style.",
+      "Embrace sustainability that respects the artisan's craft.",
+      "Join us in celebrating the artisans who bring our textiles to life."
+    ],
+    "rationale": "This big idea captures the essence of the brand's commitment to artisan authenticity and sustainability while appealing to urban Indian shoppers who value tradition in modern contexts. By focusing on storytelling and the celebration of artisans, the campaign aligns with the brand's voice and visual style, distinguishing itself from competition by emphasizing a deeper connection to the craft rather than just a product."
+  },
+  "content": {
+    "reference_image": {
+      "prompt_used": "A vibrant scene showcasing artisans weaving traditional textiles in a sunlit workshop, surrounded by colorful fabrics that blend traditional patterns with contemporary designs. The atmosphere reflects warmth and community, highlighting the craftsmanship and stories behind each piece.",
+      "motion_prompt": "A slow pan across the workshop, capturing the artisans at work, interspersed with close-ups of intricate textile details and the vibrant colors being woven together.",
+      "style_tags": [
+        "artisan authenticity",
+        "traditional craftsmanship",
+        "sustainable fashion",
+        "contemporary style",
+        "storytelling"
+      ]
+    },
+    "instagram": {
+      "caption": "\u2728 Dive into the stories woven into every thread of our handcrafted textiles. Each piece is a celebration of tradition meeting contemporary style, crafted with love and respect for the artisans behind them. Join us in embracing sustainability while honoring the rich heritage of textile artistry. \ud83c\udf3f #Handcrafted #ArtisanStories #SustainableFashion",
+      "brand_alignment_note": "The caption reflects the warm and storytelling voice of the brand while emphasizing artisan authenticity and sustainability."
+    },
+    "tiktok": {
+      "shot_list": [
+        "Wide shot of the workshop with artisans weaving textiles",
+        "Close-up of hands weaving intricate patterns",
+        "Cut to vibrant fabrics hanging on display",
+        "Artisan sharing their story about the craft",
+        "Final shot of a finished textile draped beautifully in a contemporary setting"
+      ],
+      "brand_alignment_note": "The shot list focuses on storytelling and craftsmanship, aligning with the brand's emphasis on artisan authenticity and sustainable practices."
+    }
+  },
+  "eval_result": {
+    "passed": true,
+    "brand_alignment": "The content reflects the warm, storytelling voice of the brand and emphasizes artisan authenticity and sustainability, aligning well with the brand's pillars and visual style.",
+    "harmful_content_flag": false,
+    "reason": "No harmful content or unsubstantiated claims were identified."
+  },
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": true
+}
