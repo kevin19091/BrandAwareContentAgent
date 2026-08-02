@@ -32,21 +32,18 @@ def fields_table(rows: list[tuple[str, object]]) -> str:
     return "\n".join(lines)
 
 
-def agent_message(agent_label: str, summary: str, rows: list[tuple[str, object]]) -> dict:
-    body = f"##### {agent_label}\n\n{summary}"
+def agent_message(agent_label: str, summary: str, rows: list[tuple[str, object]], rationale: str = "") -> dict:
+    # <small> sender-name tag, WhatsApp-group-chat style — a subtle label
+    # above the bubble's content, not a heading.
+    body = f"<small>**{agent_label}**</small>\n\n{summary}"
     if rows:
         body += f"\n\n{fields_table(rows)}"
+    if rationale:
+        body += f"\n\n<details><summary>Rationale</summary>\n\n{rationale}\n\n</details>"
     return {"role": "assistant", "content": body}
 
 
-def rationale_message(text: str) -> dict | None:
-    if not text:
-        return None
-    return {"role": "assistant", "content": text, "metadata": {"title": "Rationale"}}
-
-
 def build_messages(node_name: str, output: dict) -> list[dict]:
-    """One agent-labeled summary message, plus an optional collapsible rationale message."""
     if node_name == "guardrail":
         passed = output["guardrail_passed"]
         summary = "**Passed.**" if passed else "**Rejected.** Stopping here — no retry on a guardrail failure."
@@ -65,7 +62,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
 
     if node_name == "brand_dna":
         p = output["brand_profile"]
-        msg = agent_message(
+        return [agent_message(
             "Brand DNA Agent",
             "Summarized the brand's voice and identity from your guidelines.",
             [
@@ -73,40 +70,44 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
                 ("Pillars", ", ".join(p.get("pillars", []))),
                 ("Visual Style", p.get("visual_style", "")),
             ],
-        )
-        return [m for m in [msg, rationale_message(p.get("rationale"))] if m]
+            rationale=p.get("rationale", ""),
+        )]
 
     if node_name == "competition_research":
         c = output["competition_insights"]
-        msg = agent_message(
+        return [agent_message(
             "Competition Research Agent",
             "Looked at competitor / inspiration references for creative techniques worth noting.",
             [
                 ("Techniques", ", ".join(c.get("techniques", []))),
                 ("Gap identified", c.get("gap", "")),
             ],
-        )
-        return [m for m in [msg, rationale_message(c.get("rationale"))] if m]
+            rationale=c.get("rationale", ""),
+        )]
 
     if node_name in ("strategy", "retry_strategy"):
         s = output["strategy"]
         label = "Strategy Agent" if node_name == "strategy" else "Strategy Agent (retry)"
-        msg = agent_message(
+        return [agent_message(
             label,
             "Landed on one big idea and a message architecture for the campaign.",
             [
                 ("Big Idea", s.get("big_idea", "")),
                 ("Message Architecture", "; ".join(s.get("message_architecture", []))),
             ],
-        )
-        return [m for m in [msg, rationale_message(s.get("rationale"))] if m]
+            rationale=s.get("rationale", ""),
+        )]
 
     if node_name == "content_generation":
         c = output["content"]
         ig = c.get("instagram", {})
         tk = c.get("tiktok", {})
         ref = c.get("reference_image", {})
-        msg = agent_message(
+        rationale_parts = [
+            f"**Instagram:** {note}" if (note := ig.get("brand_alignment_note")) else None,
+            f"**TikTok:** {note}" if (note := tk.get("brand_alignment_note")) else None,
+        ]
+        return [agent_message(
             "Content Generation Agent",
             "Generated one shared visual concept, plus channel-specific copy for Instagram and TikTok.",
             [
@@ -115,27 +116,22 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
                 ("Instagram Caption", ig.get("caption", "")),
                 ("TikTok Shot List", f"{len(tk.get('shot_list', []))} beats"),
             ],
-        )
-        rationale_parts = [
-            f"**Instagram:** {note}" if (note := ig.get("brand_alignment_note")) else None,
-            f"**TikTok:** {note}" if (note := tk.get("brand_alignment_note")) else None,
-        ]
-        rationale_text = "\n\n".join(p for p in rationale_parts if p)
-        return [m for m in [msg, rationale_message(rationale_text)] if m]
+            rationale="\n\n".join(p for p in rationale_parts if p),
+        )]
 
     if node_name == "evaluation":
         e = output["eval_result"]
         passed = e.get("passed")
         summary = "**Passed.**" if passed else "**Failed.**"
-        msg = agent_message(
+        return [agent_message(
             "Evaluation",
             summary,
             [
                 ("Brand Alignment", e.get("brand_alignment", "")),
                 ("Harmful Content Flag", e.get("harmful_content_flag", False)),
             ],
-        )
-        return [m for m in [msg, rationale_message(e.get("reason"))] if m]
+            rationale=e.get("reason", ""),
+        )]
 
     if node_name == "increment_retry":
         return [agent_message(
@@ -149,7 +145,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
             "Escalated", "**Evaluation failed twice.** Stopping here for human review.", [],
         )]
 
-    return [{"role": "assistant", "content": f"##### {node_name}\n\n{output}"}]
+    return [{"role": "assistant", "content": f"<small>**{node_name}**</small>\n\n{output}"}]
 
 
 def stream_graph(graph, state, thread_id, history):
