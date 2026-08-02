@@ -1,4 +1,3 @@
-import json
 import os
 import uuid
 
@@ -24,20 +23,23 @@ def read_text_file(path: str | None) -> str:
         return f.read()
 
 
-def fields_table(rows: list[tuple[str, object]]) -> str:
-    lines = ["| Field | Value |", "|---|---|"]
+AGENT_LABEL_COLOR = "#dc2626"  # red; tuned to stay readable on both light and dark chat bubbles
+
+
+def field_lines(rows: list[tuple[str, object]]) -> str:
+    lines = []
     for label, value in rows:
-        value = str(value).replace("\n", " ").replace("|", "\\|") or "—"
-        lines.append(f"| {label} | {value} |")
-    return "\n".join(lines)
+        value = str(value) or "—"
+        lines.append(f"**{label}:** {value}")
+    return "\n\n".join(lines)
 
 
 def agent_message(agent_label: str, summary: str, rows: list[tuple[str, object]], rationale: str = "") -> dict:
     # <small> sender-name tag, WhatsApp-group-chat style — a subtle label
     # above the bubble's content, not a heading.
-    body = f"<small>**{agent_label}**</small>\n\n{summary}"
+    body = f'<small style="color: {AGENT_LABEL_COLOR};">**{agent_label}**</small>\n\n{summary}'
     if rows:
-        body += f"\n\n{fields_table(rows)}"
+        body += f"\n\n{field_lines(rows)}"
     if rationale:
         body += f"\n\n<details><summary>Rationale</summary>\n\n{rationale}\n\n</details>"
     return {"role": "assistant", "content": body}
@@ -145,7 +147,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
             "Escalated", "**Evaluation failed twice.** Stopping here for human review.", [],
         )]
 
-    return [{"role": "assistant", "content": f"<small>**{node_name}**</small>\n\n{output}"}]
+    return [{"role": "assistant", "content": f'<small style="color: {AGENT_LABEL_COLOR};">**{node_name}**</small>\n\n{output}'}]
 
 
 def stream_graph(graph, state, thread_id, history):
@@ -157,12 +159,16 @@ def stream_graph(graph, state, thread_id, history):
             yield state, history
 
 
+def hide_edit_fields():
+    hidden = gr.update(visible=False, value="")
+    return hidden, hidden, hidden
+
+
 def start_pipeline(brief, brand_file, competitor_file, images, hitl_mode, history):
     history = history or []
-    hide_edit = gr.update(visible=False, value="")
     if not brief or not brief.strip():
         history = history + [{"role": "assistant", "content": "Please enter a brief before running."}]
-        yield history, None, gr.update(visible=False), hide_edit
+        yield history, None, gr.update(visible=False), *hide_edit_fields()
         return
 
     session_assets = {
@@ -173,14 +179,14 @@ def start_pipeline(brief, brand_file, competitor_file, images, hitl_mode, histor
     state = make_initial_state(brief, session_assets, hitl_mode)
     thread_id = str(uuid.uuid4())
     history = history + [{"role": "user", "content": brief}]
-    yield history, None, gr.update(visible=False), hide_edit
+    yield history, None, gr.update(visible=False), *hide_edit_fields()
 
     graph = build_graph_before_checkpoint()
     for state, history in stream_graph(graph, state, thread_id, history):
-        yield history, None, gr.update(visible=False), hide_edit
+        yield history, None, gr.update(visible=False), *hide_edit_fields()
 
     if not state["guardrail_passed"]:
-        yield history, None, gr.update(visible=False), hide_edit
+        yield history, None, gr.update(visible=False), *hide_edit_fields()
         return
 
     pending = {"state": state, "thread_id": thread_id}
@@ -189,19 +195,25 @@ def start_pipeline(brief, brand_file, competitor_file, images, hitl_mode, histor
             {
                 "role": "assistant",
                 "content": (
-                    "Strategy ready for review. Edit the JSON below to change the "
-                    "strategy before content generation runs, or leave it as-is, "
-                    "then click **Continue**."
+                    "Strategy ready for review. Edit the fields below if you'd like "
+                    "to change the strategy, then click **Continue**."
                 ),
             }
         ]
-        edit_box = gr.update(visible=True, value=json.dumps(state["strategy"], indent=2))
-        yield history, pending, gr.update(visible=True), edit_box
+        s = state["strategy"]
+        yield (
+            history,
+            pending,
+            gr.update(visible=True),
+            gr.update(visible=True, value=s.get("big_idea", "")),
+            gr.update(visible=True, value="\n".join(s.get("message_architecture", []))),
+            gr.update(visible=True, value=s.get("rationale", "")),
+        )
         return
 
     # auto mode: same code path, just no UI block — continue immediately.
     for history, pending in continue_pipeline(pending, history):
-        yield history, pending, gr.update(visible=False), hide_edit
+        yield history, pending, gr.update(visible=False), *hide_edit_fields()
 
 
 def continue_pipeline(pending, history):
@@ -218,29 +230,22 @@ def continue_pipeline(pending, history):
     yield history, None
 
 
-def on_continue_click(pending, history, strategy_edit_text):
-    hide_edit = gr.update(visible=False, value="")
+def on_continue_click(pending, history, big_idea, architecture, rationale):
     if not pending:
-        yield history, None, gr.update(visible=False), hide_edit
+        yield history, None, gr.update(visible=False), *hide_edit_fields()
         return
 
-    if strategy_edit_text and strategy_edit_text.strip():
-        try:
-            pending["state"]["strategy"] = json.loads(strategy_edit_text)
-            history = history + [{"role": "assistant", "content": "Using your edited strategy."}]
-            yield history, pending, gr.update(visible=True), gr.update()
-        except json.JSONDecodeError as e:
-            history = history + [
-                {
-                    "role": "assistant",
-                    "content": f"Could not parse edited strategy JSON ({e}) — fix it or click Continue again to keep editing.",
-                }
-            ]
-            yield history, pending, gr.update(visible=True), gr.update()
-            return
+    edited_strategy = {
+        "big_idea": big_idea.strip(),
+        "message_architecture": [line.strip() for line in architecture.splitlines() if line.strip()],
+        "rationale": rationale.strip(),
+    }
+    if edited_strategy != pending["state"].get("strategy"):
+        pending["state"]["strategy"] = edited_strategy
+        history = history + [{"role": "assistant", "content": "Using your edited strategy."}]
 
     for history, pending in continue_pipeline(pending, history):
-        yield history, pending, gr.update(visible=False), hide_edit
+        yield history, pending, gr.update(visible=False), *hide_edit_fields()
 
 
 with gr.Blocks(title="Brand Intelligence Agent") as demo:
@@ -255,11 +260,12 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
     with gr.Row():
         with gr.Column(scale=2):
             chatbot = gr.Chatbot(label="Pipeline Output", height=500, group_consecutive_messages=False)
-            strategy_edit = gr.Textbox(
-                label="Edit Strategy (JSON) before continuing",
-                lines=8,
-                visible=False,
-            )
+            with gr.Group():
+                edit_big_idea = gr.Textbox(label="Big Idea", visible=False)
+                edit_architecture = gr.Textbox(
+                    label="Message Architecture (one point per line)", lines=4, visible=False
+                )
+                edit_rationale = gr.Textbox(label="Rationale", lines=2, visible=False)
             continue_btn = gr.Button("Continue", visible=False, variant="primary")
         with gr.Column(scale=1):
             brief = gr.Textbox(label="Brief", lines=4, placeholder="Describe the campaign...")
@@ -269,15 +275,17 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
             hitl_mode = gr.Radio(["auto", "step"], value="auto", label="HITL Mode")
             run_btn = gr.Button("Run Pipeline", variant="primary")
 
+    edit_fields = [edit_big_idea, edit_architecture, edit_rationale]
+
     run_btn.click(
         fn=start_pipeline,
         inputs=[brief, brand_file, competitor_file, images, hitl_mode, chatbot],
-        outputs=[chatbot, pending_state, continue_btn, strategy_edit],
+        outputs=[chatbot, pending_state, continue_btn, *edit_fields],
     )
     continue_btn.click(
         fn=on_continue_click,
-        inputs=[pending_state, chatbot, strategy_edit],
-        outputs=[chatbot, pending_state, continue_btn, strategy_edit],
+        inputs=[pending_state, chatbot, *edit_fields],
+        outputs=[chatbot, pending_state, continue_btn, *edit_fields],
     )
 
 if __name__ == "__main__":
