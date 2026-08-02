@@ -9,18 +9,15 @@ from backend.pipeline_graph import (
     build_graph_before_checkpoint,
     make_initial_state,
 )
+from backend.uploads import process_uploads
+from backend.vision import UploadError
 
 load_dotenv()
 
 APP_USER = os.environ.get("APP_USER", "admin")
 APP_PASS = os.environ.get("APP_PASS", "changeme")
 
-
-def read_text_file(path: str | None) -> str:
-    if not path:
-        return ""
-    with open(path, "r", errors="ignore") as f:
-        return f.read()
+UPLOAD_FILE_TYPES = [".txt", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", ".mov", ".webm"]
 
 
 AGENT_LABEL_COLOR = "#dc2626"  # red; tuned to stay readable on both light and dark chat bubbles
@@ -109,7 +106,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
             f"**Instagram:** {note}" if (note := ig.get("brand_alignment_note")) else None,
             f"**TikTok:** {note}" if (note := tk.get("brand_alignment_note")) else None,
         ]
-        return [agent_message(
+        messages = [agent_message(
             "Content Generation Agent",
             "Generated one shared visual concept, plus channel-specific copy for Instagram and TikTok.",
             [
@@ -120,6 +117,12 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
             ],
             rationale="\n\n".join(p for p in rationale_parts if p),
         )]
+        if ref.get("image_path"):
+            messages.append({
+                "role": "assistant",
+                "content": [{"type": "file", "file": {"path": ref["image_path"]}, "alt_text": "Generated reference image"}],
+            })
+        return messages
 
     if node_name == "evaluation":
         e = output["eval_result"]
@@ -164,18 +167,23 @@ def hide_edit_fields():
     return hidden, hidden, hidden
 
 
-def start_pipeline(brief, brand_file, competitor_file, images, hitl_mode, history):
+def start_pipeline(brief, brand_file, competitor_file, hitl_mode, history):
     history = history or []
     if not brief or not brief.strip():
         history = history + [{"role": "assistant", "content": "Please enter a brief before running."}]
         yield history, None, gr.update(visible=False), *hide_edit_fields()
         return
 
-    session_assets = {
-        "brand_guidelines": read_text_file(brand_file),
-        "competitor_refs": read_text_file(competitor_file),
-        "images": list(images) if images else [],
-    }
+    try:
+        session_assets = {
+            "brand_guidelines": process_uploads(brand_file, "Brand Guidelines"),
+            "competitor_refs": process_uploads(competitor_file, "Competitor / Inspiration Refs"),
+        }
+    except UploadError as e:
+        history = history + [{"role": "assistant", "content": f"Upload error: {e}"}]
+        yield history, None, gr.update(visible=False), *hide_edit_fields()
+        return
+
     state = make_initial_state(brief, session_assets, hitl_mode)
     thread_id = str(uuid.uuid4())
     history = history + [{"role": "user", "content": brief}]
@@ -269,9 +277,16 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
             continue_btn = gr.Button("Continue", visible=False, variant="primary")
         with gr.Column(scale=1):
             brief = gr.Textbox(label="Brief", lines=4, placeholder="Describe the campaign...")
-            brand_file = gr.File(label="Brand Guidelines (.txt)", file_types=[".txt"])
-            competitor_file = gr.File(label="Competitor / Inspiration Refs (.txt)", file_types=[".txt"])
-            images = gr.File(label="Images / Mood Board", file_count="multiple")
+            brand_file = gr.File(
+                label="Brand Guidelines (.txt, image, or video — up to 5 files)",
+                file_count="multiple",
+                file_types=UPLOAD_FILE_TYPES,
+            )
+            competitor_file = gr.File(
+                label="Competitor / Inspiration Refs (.txt, image, or video — up to 5 files)",
+                file_count="multiple",
+                file_types=UPLOAD_FILE_TYPES,
+            )
             hitl_mode = gr.Radio(["auto", "step"], value="auto", label="HITL Mode")
             run_btn = gr.Button("Run Pipeline", variant="primary")
 
@@ -279,7 +294,7 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
 
     run_btn.click(
         fn=start_pipeline,
-        inputs=[brief, brand_file, competitor_file, images, hitl_mode, chatbot],
+        inputs=[brief, brand_file, competitor_file, hitl_mode, chatbot],
         outputs=[chatbot, pending_state, continue_btn, *edit_fields],
     )
     continue_btn.click(

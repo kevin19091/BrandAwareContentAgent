@@ -56,9 +56,21 @@ fidelity, so determinism matters more than authenticity here.
   structural criteria, and does the content still read as on-brand?).
 - `data/<brand>/images/` — **gitignored**, not committed. Drop
   downloaded Instagram posts or other reference images here for manual/
-  visual comparison. The pipeline doesn't currently analyze images (no
-  vision call in any agent — see README.md known limitations), so these
-  are for human reference only, not consumed by any node.
+  visual comparison. As of M7 the pipeline *can* analyze images/video
+  fed through the actual upload boxes (`backend/vision.py`), but these
+  golden examples still load brand/competitor text only via
+  `brand_guidelines_file`/`competitor_refs_file` in `golden_examples.json`
+  — files dropped in `data/` here are for human reference only, not
+  wired into the eval runner.
+
+## Schema note (M7)
+
+`reference_image` in `content.reference_image` gained an `image_path`
+key (real mode only — a local temp file path to an actually-generated
+image, not just `prompt_used` anymore). None of the 10 golden examples'
+`expected_criteria` assert on this field, so no example needed
+updating, but a result JSON captured before M7 vs. after will differ
+in that field if you diff them.
 
 ## Findings
 

@@ -225,58 +225,56 @@ into Runway/Veo manually). This milestone only adds video as an
 **input** type for brand guidelines / competitor refs, and adds real
 image generation for the shared reference image.
 
-- [ ] Consolidate to two upload boxes total, each `file_count="multiple"`
-      accepting mixed types — `brand_file` and `competitor_file`. Drop
-      the separate generic "Images / Mood Board" field (currently
-      unused — nothing ever reads it, see README known limitations); a
-      server-side router inspects each uploaded file's extension and
-      dispatches to text-read / image-describe / video-frame-extract.
-      Accepted extensions: `.txt` (text), `.png`/`.jpg`/`.jpeg`/`.webp`/
-      `.gif` (image — GIF is accepted by OpenAI's vision input but only
-      its first frame is used, animated GIFs are flattened), `.mp4`/
-      `.mov`/`.webm` (video, decoded via ffmpeg so this list is just a
-      UI filter, not a hard codec limit)
-- [ ] Enforce size limits, rejected with a clear chat message (not a
-      silent truncation or a stack trace): text 200 KB/file (guideline
-      docs are meant to be short enough to summarize directly, no
-      chunking, per §3 — this just guards against something absurd);
-      image 8 MB/file (OpenAI's vision hard limit is 20 MB — 8 MB
-      leaves margin after ~33% base64 overhead); video 30s duration
-      (checked via `ffprobe`, matches the ≤30s clip spec in §3) plus a
-      50 MB file-size backstop so we don't run `ffmpeg` on something
-      huge before even checking duration; and 5 files max per upload
-      box (each image/video-frame is its own vision-model API call —
-      uncapped file count means uncapped cost/latency per run)
-- [ ] `backend/vision.py` (or similar): `describe_image(path) -> str`
-      — base64-encode an image, call a vision-capable chat model
-      (`gpt-4o-mini` supports vision) asking for a visual-style/mood
-      description; mock mode returns a canned description
-- [ ] Video frame extraction: shell out to `ffmpeg` (add to Dockerfile
-      `apt-get install`) to pull N evenly-spaced frames from an
-      uploaded video into temp JPEGs, then reuse `describe_image` per
-      frame and summarize; keep it to the "bare minimum" — a handful
-      of frames, not a full scene-detection pipeline
-- [ ] Wire image/video-derived descriptions into `session_assets`
-      (e.g. `image_notes`/`video_notes` alongside the existing
-      `brand_guidelines`/`competitor_refs` text) and fold them into the
-      Brand DNA / Competition Research prompts so the resulting profile
-      cites visual evidence, not just text
-- [ ] Real image generation in `content_generation_node`: call an
-      image-gen API (e.g. OpenAI `images.generate`) with
-      `reference_image.prompt_used`, store the result (URL or base64)
-      on `reference_image`; mock mode returns a placeholder image/URL,
+- [x] Consolidated to two upload boxes total (`brand_file`,
+      `competitor_file` in `frontend/app.py`), each `file_count="multiple"`
+      accepting the mixed type list; the old generic "Images / Mood
+      Board" field is gone. `backend/uploads.py` `process_uploads()`
+      is the server-side router — inspects each file's extension and
+      dispatches to text-read / `describe_image` / `describe_video`.
+      Accepted extensions as planned: `.txt`, `.png`/`.jpg`/`.jpeg`/
+      `.webp`/`.gif`, `.mp4`/`.mov`/`.webm`
+- [x] Size/count limits enforced in `process_uploads()` exactly as
+      planned (200 KB text, 8 MB image, 50 MB video backstop, 5
+      files/box), each raising `UploadError` with a specific message;
+      the 30s video duration check lives in `vision.extract_video_frames`
+      (via `ffprobe`) since that's where the video is actually opened.
+      `frontend/app.py`'s `start_pipeline` catches `UploadError` and
+      shows it as a chat message instead of crashing — verified live
+      (oversized file → clean "Upload error: ..." message, no traceback)
+- [x] `backend/vision.py`: `describe_image()` (base64 + `gpt-4o-mini`
+      vision), `extract_video_frames()` (ffmpeg, duration-checked),
+      `describe_video()` (frames -> `describe_image` per frame -> joined
+      summary), `generate_image()`. All `USE_MOCK`-gated. Verified with
+      real API calls: image description, video description (3-frame
+      extraction), and image generation all work
+- [x] Video frame extraction via `ffmpeg` subprocess calls (Dockerfile
+      `apt-get install ffmpeg` added); 3 evenly-spaced frames per video,
+      not a scene-detection pipeline
+- [x] Image/video descriptions are concatenated directly into the same
+      `brand_guidelines`/`competitor_refs` text blob (labeled by
+      filename, e.g. `[logo.png, image]\n<description>`), simpler than
+      the originally-planned separate `image_notes`/`video_notes`
+      fields — `brand_dna_node`/`competition_research_node` needed zero
+      changes since they already just read that text as one blob
+- [x] Real image generation wired into `content_generation_node`
+      (`backend/pipeline_graph.py`): calls `generate_image()` with
+      `reference_image.prompt_used`, stores the result as
+      `reference_image.image_path` (a local temp file path, not a URL/
+      b64 — `gpt-image-1` always returns b64, decoded and written to
+      disk). Mock mode: `generate_image()` returns `None` immediately,
       no API call
-- [ ] Render the generated image inline in the chat — `content_generation`
-      chat message needs a mixed text+image content list (Gradio
-      Chatbot messages support this), not just a text-only bubble
-- [ ] Cost/latency note: image generation is a paid, slower call —
-      confirm it doesn't block streaming of the rest of that node's
-      text output, and confirm `USE_MOCK=true` fully avoids it for
-      offline/free testing (same pattern as `call_llm`)
-- [ ] Update `evals/golden_examples.json` schema notes if
-      `reference_image`'s shape changes (prompt-only today); doesn't
-      need to re-run the golden examples, just document the schema
-      change so the eval sheet isn't misleading
-- [ ] README: document the new file types accepted, that image/video
-      analysis costs an extra vision-model call per file, and that
-      image generation is a paid call gated behind `USE_MOCK`
+- [x] Generated image renders inline in the chat as a second message
+      right after the Content Generation card, using Gradio's
+      `{"type": "file", "file": {"path": ...}}` content format — note
+      the `file` value must be a dict with a `path` key, not a raw
+      string, which threw a `pydantic`/`FileData` error in initial
+      testing until fixed. Verified via a live `gradio_client` round
+      trip against a running server, not just direct function calls
+- [x] `USE_MOCK=true` fully avoids the image-gen API call (checked
+      first thing in `generate_image()`); real mode confirmed working
+      end-to-end via `backend.pipeline_graph.run()` and the live UI
+- [x] `reference_image` now has an `image_path` key alongside
+      `prompt_used` (present only in real mode) — noted here as the
+      schema change; `evals/golden_examples.json`'s existing examples
+      don't need updating since they don't assert on this field
+- [ ] README: still needs the file-types/cost documentation update

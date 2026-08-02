@@ -193,6 +193,11 @@ def content_generation_node(state: AgentState) -> dict:
         '"tiktok": {"shot_list": [str], "brand_alignment_note": str}}.',
         json.dumps({"strategy": state["strategy"], "brand_profile": state["brand_profile"]}),
     )
+    prompt_used = content.get("reference_image", {}).get("prompt_used")
+    if prompt_used:
+        from backend.vision import generate_image
+
+        content.setdefault("reference_image", {})["image_path"] = generate_image(prompt_used)
     return {"content": content}
 
 
