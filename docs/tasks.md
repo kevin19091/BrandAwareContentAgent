@@ -15,15 +15,15 @@ agents "in case we add more later." A few long functions/files are fine.
 Goal: empty shell deployed and reachable by a URL, before any real logic
 exists.
 
-- [ ] Repo layout: `app.py` (Gradio entry), `pipeline_graph.py`, `Dockerfile`,
-      `requirements.txt`, `README.md`
-- [ ] Gradio `ChatInterface` with `launch(auth=(user, pass))` — password
+- [x] Repo layout: `frontend/app.py` (Gradio entry), `backend/pipeline_graph.py`,
+      `notebooks/`, `Dockerfile`, `requirements.txt`, `README.md`
+- [x] Gradio `ChatInterface` with `launch(auth=(user, pass))` — password
       from env var, no UI for changing it
-- [ ] Dockerfile: python base image, `pip install -r requirements.txt`,
+- [x] Dockerfile: python base image, `pip install -r requirements.txt`,
       `CMD` runs the Gradio app
 - [ ] Push to Hugging Face Spaces (Docker SDK) or Render; confirm the
       live URL loads and prompts for auth
-- [ ] `.env.example` with `OPENAI_API_KEY`/`ANTHROPIC_API_KEY`,
+- [x] `.env.example` with `OPENAI_API_KEY`/`ANTHROPIC_API_KEY`,
       `APP_USER`, `APP_PASS`, `USE_MOCK`
 
 ## M1 — Core Pipeline, No RAG, No HITL (Hours 2–4)
@@ -55,7 +55,7 @@ evaluation → output, hardcoded to the reference beverage-brand scenario.
 - [ ] Retry/escalate edges: capped 1 retry back to Strategy on eval
       failure; 2nd failure → escalate flag (human confirmation handled in
       M2) → END
-- [ ] Wire full `StateGraph` in `pipeline_graph.py`; `MemorySaver`
+- [ ] Wire full `StateGraph` in `backend/pipeline_graph.py`; `MemorySaver`
       checkpointer
 - [ ] Manual end-to-end run via script/CLI (before wiring into Gradio) to
       confirm the graph completes for the reference scenario
