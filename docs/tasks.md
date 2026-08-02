@@ -206,7 +206,59 @@ value if time remains.
       (Postgres) checkpointer
 - [ ] WhatsApp channel: template-format copy (≤1024 chars), reuses the
       existing reference image, no carousel
-- [ ] Actual image-generation API call, replacing the structured-prompt-
-      only output
 - [ ] Live scraping fallback when no assets exist in session or library
 - [ ] Actual video rendering via Runway/Veo API
+
+---
+
+## M7 — Multimodal Ingestion + Real Image Generation (ad hoc, requested after core build)
+
+Goal: Brand DNA / Competition Research can reason over uploaded images
+and video, not just text; Content Generation calls a real image-gen
+API instead of returning a prompt only. Supersedes the M6 "actual
+image-generation API call" bullet above (moved and expanded here).
+
+Video **output** stays prompt-only (`motion_prompt`, no rendering) —
+that part of the design is unchanged, per CLAUDE.md §7's video output
+shape (reference image + motion prompt handoff package, human takes it
+into Runway/Veo manually). This milestone only adds video as an
+**input** type for brand guidelines / competitor refs, and adds real
+image generation for the shared reference image.
+
+- [ ] Extend `brand_file`/`competitor_file` upload in `frontend/app.py`
+      to accept image and video files, not just `.txt` (multi-file,
+      mixed types) — currently the "Images / Mood Board" field exists
+      but nothing ever reads it (see README known limitations)
+- [ ] `backend/vision.py` (or similar): `describe_image(path) -> str`
+      — base64-encode an image, call a vision-capable chat model
+      (`gpt-4o-mini` supports vision) asking for a visual-style/mood
+      description; mock mode returns a canned description
+- [ ] Video frame extraction: shell out to `ffmpeg` (add to Dockerfile
+      `apt-get install`) to pull N evenly-spaced frames from an
+      uploaded video into temp JPEGs, then reuse `describe_image` per
+      frame and summarize; keep it to the "bare minimum" — a handful
+      of frames, not a full scene-detection pipeline
+- [ ] Wire image/video-derived descriptions into `session_assets`
+      (e.g. `image_notes`/`video_notes` alongside the existing
+      `brand_guidelines`/`competitor_refs` text) and fold them into the
+      Brand DNA / Competition Research prompts so the resulting profile
+      cites visual evidence, not just text
+- [ ] Real image generation in `content_generation_node`: call an
+      image-gen API (e.g. OpenAI `images.generate`) with
+      `reference_image.prompt_used`, store the result (URL or base64)
+      on `reference_image`; mock mode returns a placeholder image/URL,
+      no API call
+- [ ] Render the generated image inline in the chat — `content_generation`
+      chat message needs a mixed text+image content list (Gradio
+      Chatbot messages support this), not just a text-only bubble
+- [ ] Cost/latency note: image generation is a paid, slower call —
+      confirm it doesn't block streaming of the rest of that node's
+      text output, and confirm `USE_MOCK=true` fully avoids it for
+      offline/free testing (same pattern as `call_llm`)
+- [ ] Update `evals/golden_examples.json` schema notes if
+      `reference_image`'s shape changes (prompt-only today); doesn't
+      need to re-run the golden examples, just document the schema
+      change so the eval sheet isn't misleading
+- [ ] README: document the new file types accepted, that image/video
+      analysis costs an extra vision-model call per file, and that
+      image generation is a paid call gated behind `USE_MOCK`
