@@ -89,7 +89,14 @@ Goal: pipeline visible and controllable from the chat UI.
       is compiled as two separate graphs (`build_graph_before_checkpoint`,
       `build_graph_after_checkpoint`) in `backend/pipeline_graph.py`, and
       the UI runs them as two separate calls with the strategy state
-      handed off as a plain dict — not LangGraph's `interrupt()`/resume
+      handed off as a plain dict — not LangGraph's `interrupt()`/resume.
+      **Edit, not just confirm:** the checkpoint shows the strategy as
+      editable JSON (`frontend/app.py` `strategy_edit` textbox); on
+      Continue the edited JSON overwrites `state["strategy"]` before
+      Content Generation runs, with a parse-error message (not a lost
+      pause) if the JSON is invalid. Originally shipped confirm-only —
+      added after user testing showed a bare Continue button defeats
+      the point of a review checkpoint per CLAUDE.md §6 Type B.
 - [x] `hitl_mode` step/auto toggle in the UI; auto mode calls the same
       `continue_pipeline` function immediately instead of waiting for a
       button click — same code path either way, per §6

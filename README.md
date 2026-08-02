@@ -66,8 +66,14 @@ The app starts on `http://localhost:7860`.
    `Evaluation: PASSED`, with no pause in between.
 4. **Step mode:** switch HITL Mode to `step`, run again. The stream
    should stop after the Strategy message with "Strategy ready for
-   review. Click **Continue**..." and a **Continue** button appears.
-   Content generation and evaluation only run after you click it.
+   review..." and a **Continue** button appears, along with an "Edit
+   Strategy (JSON)" box pre-filled with the current strategy. Edit the
+   `big_idea` field (or leave it as-is) and click **Continue** — content
+   generation should build on your edited strategy, not the original
+   (a "Using your edited strategy." message confirms it took). Try
+   breaking the JSON on purpose too — it should show a parse-error
+   message and let you fix it and click Continue again, rather than
+   losing the pause.
 5. **Guardrail rejection:** type a brief containing `trigger_reject`
    anywhere — the pipeline should stop after one "REJECTED" message,
    with no further steps.
