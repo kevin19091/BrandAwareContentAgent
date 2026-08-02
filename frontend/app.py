@@ -24,48 +24,132 @@ def read_text_file(path: str | None) -> str:
         return f.read()
 
 
-def format_node_message(node_name: str, output: dict) -> str:
+def fields_table(rows: list[tuple[str, object]]) -> str:
+    lines = ["| Field | Value |", "|---|---|"]
+    for label, value in rows:
+        value = str(value).replace("\n", " ").replace("|", "\\|") or "—"
+        lines.append(f"| {label} | {value} |")
+    return "\n".join(lines)
+
+
+def agent_message(agent_label: str, summary: str, rows: list[tuple[str, object]]) -> dict:
+    body = f"##### {agent_label}\n\n{summary}"
+    if rows:
+        body += f"\n\n{fields_table(rows)}"
+    return {"role": "assistant", "content": body}
+
+
+def rationale_message(text: str) -> dict | None:
+    if not text:
+        return None
+    return {"role": "assistant", "content": text, "metadata": {"title": "Rationale"}}
+
+
+def build_messages(node_name: str, output: dict) -> list[dict]:
+    """One agent-labeled summary message, plus an optional collapsible rationale message."""
     if node_name == "guardrail":
-        if output["guardrail_passed"]:
-            return f"**Guardrail:** passed — {output['guardrail_reason']}"
-        return f"**Guardrail:** REJECTED — {output['guardrail_reason']}"
+        passed = output["guardrail_passed"]
+        summary = "**Passed.**" if passed else "**Rejected.** Stopping here — no retry on a guardrail failure."
+        return [agent_message(
+            "Guardrail Check", summary,
+            [("Result", "Passed" if passed else "Rejected"), ("Reason", output["guardrail_reason"])],
+        )]
+
     if node_name == "ingestion":
-        return f"**Ingestion:** source = `{output['ingestion_source']}`"
+        source = output["ingestion_source"]
+        summary = {
+            "session": "Found brand assets in your upload — using them.",
+            "none": "No brand assets provided — continuing without brand context.",
+        }.get(source, f"Source: {source}")
+        return [agent_message("Ingestion", summary, [("Source", source)])]
+
     if node_name == "brand_dna":
         p = output["brand_profile"]
-        return (
-            f"**Brand DNA:** pillars = {', '.join(p.get('pillars', []))}\n\n"
-            f"Rationale: {p.get('rationale', '')}"
+        msg = agent_message(
+            "Brand DNA Agent",
+            "Summarized the brand's voice and identity from your guidelines.",
+            [
+                ("Voice", p.get("voice", "")),
+                ("Pillars", ", ".join(p.get("pillars", []))),
+                ("Visual Style", p.get("visual_style", "")),
+            ],
         )
+        return [m for m in [msg, rationale_message(p.get("rationale"))] if m]
+
     if node_name == "competition_research":
         c = output["competition_insights"]
-        return (
-            f"**Competition Research:** techniques = {', '.join(c.get('techniques', []))}\n\n"
-            f"Rationale: {c.get('rationale', '')}"
+        msg = agent_message(
+            "Competition Research Agent",
+            "Looked at competitor / inspiration references for creative techniques worth noting.",
+            [
+                ("Techniques", ", ".join(c.get("techniques", []))),
+                ("Gap identified", c.get("gap", "")),
+            ],
         )
+        return [m for m in [msg, rationale_message(c.get("rationale"))] if m]
+
     if node_name in ("strategy", "retry_strategy"):
         s = output["strategy"]
-        return f"**Strategy:** {s.get('big_idea', '')}\n\nRationale: {s.get('rationale', '')}"
+        label = "Strategy Agent" if node_name == "strategy" else "Strategy Agent (retry)"
+        msg = agent_message(
+            label,
+            "Landed on one big idea and a message architecture for the campaign.",
+            [
+                ("Big Idea", s.get("big_idea", "")),
+                ("Message Architecture", "; ".join(s.get("message_architecture", []))),
+            ],
+        )
+        return [m for m in [msg, rationale_message(s.get("rationale"))] if m]
+
     if node_name == "content_generation":
         c = output["content"]
         ig = c.get("instagram", {})
         tk = c.get("tiktok", {})
-        return (
-            f"**Content Generated**\n\n"
-            f"Instagram caption: {ig.get('caption', '')}\n"
-            f"Rationale: {ig.get('brand_alignment_note', '')}\n\n"
-            f"TikTok shot list: {len(tk.get('shot_list', []))} beats\n"
-            f"Rationale: {tk.get('brand_alignment_note', '')}"
+        ref = c.get("reference_image", {})
+        msg = agent_message(
+            "Content Generation Agent",
+            "Generated one shared visual concept, plus channel-specific copy for Instagram and TikTok.",
+            [
+                ("Reference Image Prompt", ref.get("prompt_used", "")),
+                ("Motion Prompt", c.get("motion_prompt", "")),
+                ("Instagram Caption", ig.get("caption", "")),
+                ("TikTok Shot List", f"{len(tk.get('shot_list', []))} beats"),
+            ],
         )
+        rationale_parts = [
+            f"**Instagram:** {note}" if (note := ig.get("brand_alignment_note")) else None,
+            f"**TikTok:** {note}" if (note := tk.get("brand_alignment_note")) else None,
+        ]
+        rationale_text = "\n\n".join(p for p in rationale_parts if p)
+        return [m for m in [msg, rationale_message(rationale_text)] if m]
+
     if node_name == "evaluation":
         e = output["eval_result"]
-        verdict = "PASSED" if e.get("passed") else "FAILED"
-        return f"**Evaluation:** {verdict} — {e.get('reason', '')}"
+        passed = e.get("passed")
+        summary = "**Passed.**" if passed else "**Failed.**"
+        msg = agent_message(
+            "Evaluation",
+            summary,
+            [
+                ("Brand Alignment", e.get("brand_alignment", "")),
+                ("Harmful Content Flag", e.get("harmful_content_flag", False)),
+            ],
+        )
+        return [m for m in [msg, rationale_message(e.get("reason"))] if m]
+
     if node_name == "increment_retry":
-        return f"**Retrying** (attempt {output['retry_count']})..."
+        return [agent_message(
+            "Retrying",
+            f"Evaluation didn't pass — regenerating strategy and content (attempt {output['retry_count']}).",
+            [("Attempt", output["retry_count"])],
+        )]
+
     if node_name == "escalate":
-        return "**Escalated:** evaluation failed twice. Stopping for human review."
-    return f"**{node_name}:** {output}"
+        return [agent_message(
+            "Escalated", "**Evaluation failed twice.** Stopping here for human review.", [],
+        )]
+
+    return [{"role": "assistant", "content": f"##### {node_name}\n\n{output}"}]
 
 
 def stream_graph(graph, state, thread_id, history):
@@ -73,7 +157,7 @@ def stream_graph(graph, state, thread_id, history):
     for update in graph.stream(state, config, stream_mode="updates"):
         for node_name, node_output in update.items():
             state = {**state, **node_output}
-            history = history + [{"role": "assistant", "content": format_node_message(node_name, node_output)}]
+            history = history + build_messages(node_name, node_output)
             yield state, history
 
 
