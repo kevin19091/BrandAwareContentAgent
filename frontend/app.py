@@ -147,7 +147,7 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
 
     with gr.Row():
         with gr.Column(scale=2):
-            chatbot = gr.Chatbot(label="Pipeline Output", height=500)
+            chatbot = gr.Chatbot(label="Pipeline Output", height=500, group_consecutive_messages=False)
             continue_btn = gr.Button("Continue", visible=False, variant="primary")
         with gr.Column(scale=1):
             brief = gr.Textbox(label="Brief", lines=4, placeholder="Describe the campaign...")
