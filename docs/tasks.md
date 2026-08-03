@@ -296,4 +296,5 @@ image generation for the shared reference image.
       `prompt_used` (present only in real mode) — noted here as the
       schema change; `evals/golden_examples.json`'s existing examples
       don't need updating since they don't assert on this field
-- [ ] README: still needs the file-types/cost documentation update
+- [x] README: added "Upload formats & limits" table, corrected the
+      stale "images not analyzed" limitation, updated "What to test"
