@@ -308,12 +308,22 @@ image generation for the shared reference image.
       disk). Mock mode: `generate_image()` returns `None` immediately,
       no API call
 - [x] Generated image renders inline in the chat as a second message
-      right after the Content Generation card, using Gradio's
-      `{"type": "file", "file": {"path": ...}}` content format — note
-      the `file` value must be a dict with a `path` key, not a raw
-      string, which threw a `pydantic`/`FileData` error in initial
-      testing until fixed. Verified via a live `gradio_client` round
-      trip against a running server, not just direct function calls
+      right after the Content Generation card. **Two iterations to get
+      right:** first attempt used `{"type": "file", "file": {"path":
+      ...}}` — this actually rendered as a generic download-link file
+      card, not an inline image (caught via user screenshot of the live
+      UI, not by any of the API-level testing, since a well-formed
+      `FileMessage` isn't itself wrong, it's just the wrong content
+      type for wanting an inline preview). Reading `_postprocess_content`
+      in Gradio's own `chatbot.py` source directly confirmed `"file"`
+      content always produces a `FileMessage` with no image-detection
+      branch. Fixed by passing a live `gr.Image(value=path)` instance
+      instead, which hits the `GradioComponent` branch and lets Gradio
+      compute its own component config — producing a
+      `{"type": "component", "component": "image"}` message, which is
+      what actually renders inline. Verified via a live `gradio_client`
+      round trip that the wire format changed accordingly and the file
+      still serves correctly as `image/png` over HTTP.
 - [x] `USE_MOCK=true` fully avoids the image-gen API call (checked
       first thing in `generate_image()`); real mode confirmed working
       end-to-end via `backend.pipeline_graph.run()` and the live UI
