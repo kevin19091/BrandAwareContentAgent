@@ -21,6 +21,7 @@ UPLOAD_FILE_TYPES = [".txt", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", "
 
 
 AGENT_LABEL_COLOR = "#dc2626"  # red; tuned to stay readable on both light and dark chat bubbles
+AGENT_LABEL_STYLE = f"color: {AGENT_LABEL_COLOR}; font-family: 'Times New Roman', Times, serif;"
 
 
 def field_lines(rows: list[tuple[str, object]]) -> str:
@@ -34,7 +35,7 @@ def field_lines(rows: list[tuple[str, object]]) -> str:
 def agent_message(agent_label: str, summary: str, rows: list[tuple[str, object]], rationale: str = "") -> dict:
     # <small> sender-name tag, WhatsApp-group-chat style — a subtle label
     # above the bubble's content, not a heading.
-    body = f'<small style="color: {AGENT_LABEL_COLOR};">**{agent_label}**</small>\n\n{summary}'
+    body = f'<small style="{AGENT_LABEL_STYLE}">**{agent_label}**</small>\n\n{summary}'
     if rows:
         body += f"\n\n{field_lines(rows)}"
     if rationale:
@@ -125,7 +126,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
                 ("Reference Image Prompt", ref.get("prompt_used", "")),
                 ("Motion Prompt", c.get("motion_prompt", "")),
                 ("Instagram Caption", ig.get("caption", "")),
-                ("TikTok Shot List", f"{len(tk.get('shot_list', []))} beats"),
+                ("TikTok Shot List", "<br/>".join(tk.get("shot_list", [])) or "—"),
             ],
             rationale="\n\n".join(p for p in rationale_parts if p),
         )]
@@ -166,7 +167,7 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
             "Escalated", "**Evaluation failed twice.** Stopping here for human review.", [],
         )]
 
-    return [{"role": "assistant", "content": f'<small style="color: {AGENT_LABEL_COLOR};">**{node_name}**</small>\n\n{output}'}]
+    return [{"role": "assistant", "content": f'<small style="{AGENT_LABEL_STYLE}">**{node_name}**</small>\n\n{output}'}]
 
 
 def stream_graph(graph, state, thread_id, history):
@@ -276,8 +277,6 @@ with gr.Blocks(title="Brand Intelligence Agent") as demo:
     gr.Markdown(
         "# Brand Intelligence Agent\n"
         "Upload brand assets and a brief to generate brand-aligned content. "
-        "Pipeline: guardrail -> ingestion -> brand DNA -> competition research -> "
-        "strategy -> (confirm) -> content generation -> evaluation."
     )
     pending_state = gr.State(None)
 

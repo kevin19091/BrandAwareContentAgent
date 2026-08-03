@@ -225,22 +225,34 @@ def content_generation_node(state: AgentState) -> dict:
                 },
             }
         }
-    content = call_llm(
+    system_prompt = (
         f"You are the Content Generation agent, writing for the brand \"{state['brand_name']}\". "
-        "Given the strategy, produce ONE shared visual concept (reference_image.prompt_used, "
-        "motion_prompt, style_tags), then channel-specific copy that reuses that same "
-        "visual — do not generate a separate visual per channel. Never mention, name, "
-        f"hashtag, or attribute any of the output to a competitor brand — captions, shot "
-        f"lists, and prompts must be about \"{state['brand_name']}\" only. "
+        "Given the strategy, produce ONE shared visual concept, then channel-specific copy "
+        "that reuses that same visual — do not generate a separate visual per channel. "
+        "Never mention, name, hashtag, or attribute any of the output to a competitor "
+        f"brand — captions, shot lists, and prompts must be about \"{state['brand_name']}\" only. "
+        "Every one of these top-level fields is REQUIRED and must be non-empty: "
+        "reference_image.prompt_used (the still-image prompt); motion_prompt — camera "
+        "movement, pacing, and total duration, written in language a video-generation "
+        "model like Runway or Veo would understand, e.g. 'handheld whip-pan, 3-second "
+        "hold, quick cut to product, 8s total' — this is not optional, never leave it "
+        "blank or omit it; style_tags; instagram; tiktok. "
         'Respond with JSON: {"reference_image": {"prompt_used": str}, "motion_prompt": str, '
         '"style_tags": [str], "instagram": {"caption": str, "brand_alignment_note": str}, '
-        '"tiktok": {"shot_list": [str], "brand_alignment_note": str}}.',
-        json.dumps({
-            "strategy": state["strategy"],
-            "brand_name": state["brand_name"],
-            "brand_profile": state["brand_profile"],
-        }),
+        '"tiktok": {"shot_list": [str], "brand_alignment_note": str}}.'
     )
+    user_payload = json.dumps({
+        "strategy": state["strategy"],
+        "brand_name": state["brand_name"],
+        "brand_profile": state["brand_profile"],
+    })
+    content = call_llm(system_prompt, user_payload)
+    if not str(content.get("motion_prompt", "")).strip():
+        content = call_llm(
+            system_prompt + " Your previous response omitted motion_prompt — it is "
+            "REQUIRED, do not omit it this time.",
+            user_payload,
+        )
     prompt_used = content.get("reference_image", {}).get("prompt_used")
     if prompt_used:
         from backend.vision import generate_image
