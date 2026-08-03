@@ -132,7 +132,11 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
         if ref.get("image_path"):
             messages.append({
                 "role": "assistant",
-                "content": [{"type": "file", "file": {"path": ref["image_path"]}, "alt_text": "Generated reference image"}],
+                # A live gr.Image instance renders inline in the bubble (Gradio
+                # computes its own config from the component); a plain
+                # {"type": "file", ...} dict always renders as a generic
+                # download-link file card, even for image files.
+                "content": [gr.Image(value=ref["image_path"])],
             })
         return messages
 
