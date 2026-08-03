@@ -3,6 +3,7 @@
 Agentic system that ingests a brand's assets, synthesizes a brand
 understanding, and generates brand-aligned content across channels. Full
 design and scope: [CLAUDE.md](CLAUDE.md). Build plan: [docs/tasks.md](docs/tasks.md).
+Architecture (LangGraph state schema + graph diagram): [docs/architecture.md](docs/architecture.md).
 
 **Live demo:** https://brandawarecontentagent.onrender.com (password-
 gated — ask for credentials). Free-tier Render host, so it cold-starts
@@ -198,3 +199,4 @@ insights, strategy, per-channel content, eval result) printed to stdout.
 | `.env.example` | Required environment variables, copy to `.env` |
 | `CLAUDE.md` | Full product/design spec |
 | `docs/tasks.md` | Milestone and task breakdown |
+| `docs/architecture.md` | LangGraph state schema + graph diagram |

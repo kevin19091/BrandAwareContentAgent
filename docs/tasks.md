@@ -209,8 +209,12 @@ Goal: everything testable with no network, presentable README.
 - [ ] Basic error handling: missing required upload → clear message
       (Type A HITL — see note below), LLM/API failure → clear message,
       not a stack trace in the chat
-- [ ] README: setup, env vars, how to run locally, how to run in Docker,
-      mock mode instructions, architecture summary/diagram
+- [x] README: setup, env vars, how to run locally, how to run in
+      Docker, mock mode instructions all present. Architecture diagram
+      added as its own doc, `docs/architecture.md` — exact `AgentState`
+      schema table + a mermaid graph diagram of both compiled graphs
+      (verified against `backend/pipeline_graph.py`, not written from
+      memory), linked from the README rather than inlined
 
 > Note: Type A input-missing HITL (brand DNA / competition research
 > fallback chain step 3 — "neither session nor library match, pause and
