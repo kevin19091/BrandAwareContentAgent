@@ -65,8 +65,10 @@ The app starts on `http://localhost:7860`.
    `APP_PASS`; defaults are `admin` / `changeme` if you didn't set them).
    Try a bad password once first — it should re-prompt, not let you in.
 3. **Auto mode (default):** leave the HITL Mode radio on `auto`, type a
-   brief (e.g. "Launch a high-energy summer campaign for a beverage
-   brand targeting urban Gen-Z audiences"), optionally attach files for
+   brief that names a brand, objective, and audience (e.g. "Launch a
+   high-energy summer campaign for Fizzly, a beverage brand, targeting
+   urban Gen-Z audiences" — required in real mode, see Guardrail note
+   below), optionally attach files for
    Brand Guidelines / Competitor Refs (`.txt`, images, or short videos —
    see Upload formats & limits below), click **Run Pipeline**. You
    should see one chat message per pipeline step stream in — Guardrail,
@@ -91,9 +93,16 @@ The app starts on `http://localhost:7860`.
    — it gets sampled into a few frames and described the same way. Try
    uploading something over the size/duration limits (see below) — you
    should get a clear "Upload error: ..." chat message, not a crash.
-6. **Guardrail rejection:** type a brief containing `trigger_reject`
-   anywhere — the pipeline should stop after one "Rejected." message,
-   with no further steps.
+6. **Guardrail rejection / insufficient brief:** the Guardrail step now
+   does two things in one call — security (injection/scope) and brief
+   completeness (does it name a brand, an objective, and an audience?).
+   Type a brief containing `trigger_reject` anywhere — the pipeline
+   should stop after one "Rejected." message, with no further steps
+   (not even the Brief Completeness message). Separately, try a brief
+   that never names a brand (e.g. "Launch a campaign for young
+   people.") — Guardrail should pass, but the follow-up "Brief
+   Completeness Check" message should say "Insufficient" and stop
+   there, before Ingestion ever runs.
 7. **Retry/escalate:** `trigger_eval_fail` in the brief should fail
    evaluation once, then show a "Retrying" message, then pass on the
    second attempt. `trigger_escalate` should fail twice and end on an
@@ -143,7 +152,7 @@ checks without a browser. Requires the venv set up per Option A above.
 `.env.example`, every node returns canned output:
 
 ```bash
-python3 -m backend.pipeline_graph "Create a high-energy summer campaign targeting urban Gen-Z audiences, emphasizing freedom, self-expression, and adventure."
+python3 -m backend.pipeline_graph "Create a high-energy summer campaign for Fizzly, a beverage brand, targeting urban Gen-Z audiences, emphasizing freedom, self-expression, and adventure."
 ```
 
 Special keywords anywhere in the brief exercise the other control-flow
@@ -151,16 +160,22 @@ branches in mock mode:
 
 | Keyword | What it tests |
 |---|---|
-| (none) | Happy path — passes straight through |
+| (none, with a brand/objective/audience stated) | Happy path — passes straight through |
 | `trigger_reject` | Guardrail stops the run immediately, no retry |
+| `trigger_incomplete_brief` | Guardrail's security check passes, but the brief-completeness check fails (no brand name) — stops before Ingestion, no retry |
 | `trigger_eval_fail` | Evaluation fails once, retries, passes on 2nd attempt |
 | `trigger_escalate` | Evaluation fails twice, retry cap hit, escalates |
+
+Note: a real (non-mock) brief must actually name a brand, state an
+objective, and state a target audience — Guardrail's combined check
+now rejects briefs missing any of these, same as it rejects prompt
+injection.
 
 **Real mode (calls OpenAI, uses API credits)** — set `USE_MOCK=false`
 and `OPENAI_API_KEY=...` in `.env`, then run the same command:
 
 ```bash
-python3 -m backend.pipeline_graph "Create a high-energy summer campaign targeting urban Gen-Z audiences, emphasizing freedom, self-expression, and adventure."
+python3 -m backend.pipeline_graph "Create a high-energy summer campaign for Fizzly, a beverage brand, targeting urban Gen-Z audiences, emphasizing freedom, self-expression, and adventure."
 ```
 
 The trigger keywords above are mock-only and have no effect in real

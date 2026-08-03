@@ -123,13 +123,34 @@ future work in CLAUDE.md §13. See `evals/README.md` for full methodology.
       retry_count) — all 10 pass
 - [x] `evals/build_sheet.py` — generates `evals/golden_examples.md`
       (the human-readable golden response sheet) from captured results
-- [ ] **Bug found via eval, not yet fixed:** `02_nike_happy_step` — with
-      competitor info in context, the real Content Generation output
-      named the competitor (Adidas) instead of the brand being generated
-      for (`#AdidasUnity` in a Nike Instagram caption), and Evaluation
-      still passed it. Evaluation's brand-alignment check doesn't verify
-      generated copy names the correct brand. See `evals/README.md`
-      Findings section for detail and suggested fix.
+- [x] **Bug found via eval, fixed:** `02_nike_happy_step` (and 2 more
+      instances, `01_nike_happy_auto`/`11_nike_multimodal`) — the real
+      Content Generation output named the competitor (Adidas) instead
+      of the brand being generated for, and Evaluation passed it
+      anyway. Root cause: competitor names were explicit proper nouns
+      in context while the brand itself was only ever a bag of
+      voice/pillar adjectives, nothing to anchor "self" against.
+      Fixed by (1) extracting an explicit `brand_name` in
+      `guardrail_node` (see below) and threading it through Strategy/
+      Content Generation/Evaluation prompts, and (2) an explicit
+      competitor-misattribution check added to Evaluation's prompt.
+      Re-ran all three previously-buggy examples: `brand_name`
+      extracted correctly, zero competitor mentions, captions even
+      picked up the real `#JustDoIt` tagline. See `evals/README.md`
+      Findings for full detail and before/after evidence.
+- [x] **Brief-completeness check added** (user-requested follow-up to
+      the bug fix above): `guardrail_node` now does security AND
+      completeness in one combined LLM call — a usable brief must name
+      a brand/product, objective, and audience, or the run stops with a
+      clear message before Ingestion. New `AgentState` fields:
+      `brief_check_passed`, `brief_check_reason`, `brand_name`. New
+      mock trigger keyword `trigger_incomplete_brief`. Deliberately
+      combined into the existing guardrail node rather than a separate
+      node/LLM call, since both are non-retryable early stops — one
+      call instead of two. New golden example `15_insufficient_brief`
+      tests the rejection branch. `REFERENCE_BRIEF` and all real-mode
+      golden example briefs updated to name their brand so they still
+      pass the new check.
 - [x] **Extended after M7:** added 4 more golden examples
       (`11_nike_multimodal`–`14_mamaearth_multimodal`) rerunning the
       same brands/briefs against real Instagram video/images (via

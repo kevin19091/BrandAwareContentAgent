@@ -46,7 +46,7 @@ def run_example(example: dict) -> dict:
     state = before.invoke(state, config)
     paused_correctly = bool(state.get("strategy")) and not state.get("content")
 
-    if not state["guardrail_passed"]:
+    if not state["guardrail_passed"] or not state["brief_check_passed"]:
         return {**state, "_paused_correctly": None}
 
     after = build_graph_after_checkpoint()
@@ -65,6 +65,7 @@ def grade(example: dict, result: dict) -> list[str]:
         lines.append(f"  {'PASS' if ok else 'FAIL'} {field}: expected={expected_val!r} actual={actual!r}")
 
     check("guardrail_passed", result.get("guardrail_passed"), expected.get("guardrail_passed"))
+    check("brief_check_passed", result.get("brief_check_passed"), expected.get("brief_check_passed"))
     check("ingestion_source", result.get("ingestion_source"), expected.get("ingestion_source"))
     check("eval_passed", (result.get("eval_result") or {}).get("passed"), expected.get("eval_passed"))
     check("escalated", result.get("escalated"), expected.get("escalated"))

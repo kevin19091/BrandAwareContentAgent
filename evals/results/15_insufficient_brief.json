@@ -1,0 +1,22 @@
+{
+  "raw_input": "trigger_incomplete_brief \u2014 launch a campaign for young people.",
+  "session_assets": {
+    "brand_guidelines": "",
+    "competitor_refs": ""
+  },
+  "hitl_mode": "auto",
+  "guardrail_passed": true,
+  "guardrail_reason": "no injection or out-of-scope signal detected",
+  "brief_check_passed": false,
+  "brief_check_reason": "missing: brand/product name (matched test keyword 'trigger_incomplete_brief')",
+  "brand_name": "",
+  "ingestion_source": "",
+  "brand_profile": {},
+  "competition_insights": {},
+  "strategy": {},
+  "content": {},
+  "eval_result": {},
+  "retry_count": 0,
+  "escalated": false,
+  "_paused_correctly": null
+}

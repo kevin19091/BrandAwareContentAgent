@@ -1,5 +1,5 @@
 {
-  "raw_input": "Launch a campaign for new parents introducing a toxin-free baby-care range.",
+  "raw_input": "Launch a Mamaearth campaign for new parents introducing a toxin-free baby-care range.",
   "session_assets": {
     "brand_guidelines": "",
     "competitor_refs": ""
@@ -7,6 +7,9 @@
   "hitl_mode": "auto",
   "guardrail_passed": true,
   "guardrail_reason": "no injection or out-of-scope signal detected",
+  "brief_check_passed": true,
+  "brief_check_reason": "brand name, objective, and audience all present",
+  "brand_name": "Mock Brand",
   "ingestion_source": "none",
   "brand_profile": {
     "voice": "energetic, inclusive, unapologetically bold",

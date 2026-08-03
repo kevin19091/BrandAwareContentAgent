@@ -1,6 +1,6 @@
 # Evals — golden response sheet
 
-14 hand-picked golden examples covering the pipeline's control-flow
+15 hand-picked golden examples covering the pipeline's control-flow
 branches, 4 real brands (2 top-tier, 2 mid-tier) with hand-researched
 text profiles, and 4 more examples re-running those same brands/briefs
 against real downloaded Instagram media instead of text (M7 multimodal
@@ -44,7 +44,24 @@ posts** (see the `review_focus` field on each example for the exact
 `yt-dlp` source). They're not reproducible from a fresh clone the way
 1-10 are — that's expected and by design, not an oversight.
 
-## Why 10 examples run in real mode and 4 in mock mode
+## Required brief elements
+
+`guardrail_node` now does two things in one LLM call: the original
+security check (injection/scope), and a brief-completeness check — a
+usable brief must name a brand/product, a campaign objective, and a
+target audience, or the run stops with a clear message before
+Ingestion. This was added specifically to fix the wrong-brand-name bug
+(see Findings) — the extracted `brand_name` is threaded through every
+downstream prompt as an explicit anchor. All real-mode examples' briefs
+were updated to name their brand accordingly (e.g. "Launch a
+new-season **Nike** campaign...") so they still pass. `07_reject_guardrail`
+is deliberately left as pure injection text (not a real brief) since
+its security check should reject it before completeness is ever
+evaluated. `15_insufficient_brief` (new, mock) specifically tests the
+completeness-rejection branch via the `trigger_incomplete_brief`
+keyword.
+
+## Why 10 examples run in real mode and 5 in mock mode
 
 The brand-showcase examples (happy path across all 4 brands, 2 of them
 also in step mode, plus the 4 multimodal examples) run against the
@@ -53,25 +70,27 @@ returns identical canned content regardless of brand input or uploaded
 media, so it can't demonstrate actual brand-specific generation or
 exercise real vision analysis.
 
-The 4 control-flow edge cases (guardrail reject, eval-fail retry,
-eval-fail escalate, no-assets ingestion fallback) run in **mock** mode
-instead, deliberately. Those trigger keywords (`trigger_reject`,
-`trigger_eval_fail`, `trigger_escalate`) only work in mock mode —
-real guardrail/evaluation outcomes are genuine model judgment calls,
-not reliably reproducible on demand. These 4 examples test the graph's
-plumbing (does it actually stop on reject, retry once then continue,
-escalate on a 2nd failure, handle empty input gracefully?), not brand
-fidelity, so determinism matters more than authenticity here.
+The 5 control-flow edge cases (guardrail reject, insufficient brief,
+eval-fail retry, eval-fail escalate, no-assets ingestion fallback) run
+in **mock** mode instead, deliberately. Those trigger keywords
+(`trigger_reject`, `trigger_incomplete_brief`, `trigger_eval_fail`,
+`trigger_escalate`) only work in mock mode — real guardrail/evaluation
+outcomes are genuine model judgment calls, not reliably reproducible
+on demand. These 5 examples test the graph's plumbing (does it
+actually stop on reject, stop on an incomplete brief, retry once then
+continue, escalate on a 2nd failure, handle empty input gracefully?),
+not brand fidelity, so determinism matters more than authenticity here.
 
 ## Structure
 
-- `golden_examples.json` — all 14 example specs: brand, scenario, mode,
+- `golden_examples.json` — all 15 example specs: brand, scenario, mode,
   hitl_mode, brief, `brand_guidelines_files`/`competitor_refs_files`
   (lists of paths — text, image, and/or video, resolved relative to
   `evals/` and passed through `backend.uploads.process_uploads`, the
   same router the live app uses), and expected structural criteria
-  (`guardrail_passed`, `ingestion_source`, `eval_passed`, `escalated`,
-  `retry_count` where applicable) plus a `review_focus` note for the
+  (`guardrail_passed`, `brief_check_passed`, `ingestion_source`,
+  `eval_passed`, `escalated`, `retry_count` where applicable) plus a
+  `review_focus` note for the
   subjective parts (does the copy actually sound like the brand?) that
   no automated check here grades — that's still a human/LLM-judge call,
   per the open item in CLAUDE.md §13.
@@ -95,38 +114,39 @@ in that field if you diff them.
 
 ## Findings
 
-- **`02_nike_happy_step` — wrong-brand-name bug.** With competitor info
-  (Adidas) present in `competitor_refs`, the real Strategy agent's
-  rationale said the campaign "positions **Adidas** as a supportive
-  community," and the generated Instagram caption included the hashtag
-  `#AdidasUnity` — the pipeline hallucinated the competitor's name into
-  Nike's own campaign copy. Evaluation still passed it
-  ("no harmful content or unsubstantiated claims present") — the
-  Evaluation agent's brand-alignment check doesn't currently verify that
-  generated copy actually names the brand it's being generated for, only
-  tone/pillar alignment. Follow-up: either the Content Generation prompt
-  needs an explicit "never name a competitor in outward-facing copy"
-  guard, or the Evaluation agent's brand-alignment check needs a
-  same-brand-name assertion. Not fixed as part of this eval pass — see
-  `docs/tasks.md` for tracking.
-- `01_nike_happy_auto` shows a milder version of the same failure mode
-  without naming Adidas outright: its rationale explicitly says it's
-  "moving away from individual achievement and instead fostering a
-  sense of community and support" — drifting toward the communal-support
-  framing that `competitor_refs.txt` flags as Adidas' differentiator,
-  despite the brief and guidelines both being individual-effort framed.
-  Suggests the Strategy agent reads competitor techniques as inspiration
-  to *emulate* rather than *differentiate from*, at least in this case.
-- **`11_nike_multimodal` — same wrong-brand-name bug, third instance.**
-  With brand DNA now derived purely from a real Nike video (no text
-  guidelines at all), the Strategy rationale still explicitly names
-  "competitors like Nike and Adidas" — listing Nike as its own
-  competitor. This happened with zero hand-written text in the loop,
-  so it isn't an artifact of anything in `competitor_refs.txt`'s
-  wording — the model conflates brand identity with competitor identity
-  on its own when both are present in context, regardless of input
-  modality. Strengthens the case for the same-brand-name check proposed
-  under `02_nike_happy_step` above.
+- **Wrong-brand-name bug — FIXED, 3 instances.** `02_nike_happy_step`:
+  with competitor info (Adidas) present in `competitor_refs`, the real
+  Strategy agent's rationale said the campaign "positions **Adidas** as
+  a supportive community," and the generated Instagram caption included
+  the hashtag `#AdidasUnity`. `01_nike_happy_auto` showed a milder
+  version — drifting toward Adidas' communal-support framing without
+  naming it outright. `11_nike_multimodal` showed it a third time with
+  *zero text in the loop* (brand DNA derived purely from a real Nike
+  video) — the Strategy rationale named "competitors like Nike and
+  Adidas," listing Nike as its own competitor. Evaluation passed all
+  three ("no harmful content or unsubstantiated claims present") since
+  its brand-alignment check only looked at tone/pillar match, never
+  whether the copy names the correct brand.
+
+  **Root cause:** `competition_insights` gave the model an explicit,
+  named proper noun (the competitor) while the brand itself was only
+  ever a bag of adjectives (voice/pillars/visual_style) with no name
+  anchor anywhere in state — nothing to definitively distinguish "self"
+  from "the other brand in context."
+
+  **Fix:** two-pronged, in `backend/pipeline_graph.py`. (1)
+  `guardrail_node` now also extracts and validates `brand_name` from
+  the brief (see "Required brief elements" below) and threads it
+  explicitly through the Strategy/Content Generation/Evaluation
+  prompts as `writing for the brand "{brand_name}"` — giving the model
+  a concrete anchor instead of forcing it to infer identity from
+  adjectives alone. (2) Evaluation's prompt now explicitly checks for
+  competitor misattribution as a distinct failure condition. Re-ran all
+  three examples after the fix: `brand_name` extracted correctly as
+  "Nike" in each, zero mentions of Adidas anywhere in any output, and
+  captions even picked up the real `#JustDoIt` tagline — a sign the
+  explicit name let the model draw on genuine brand knowledge instead
+  of guessing. See `golden_examples.md` for the current captured output.
 - **`14_mamaearth_multimodal` — brand voice drifted under vision-only
   input.** With brand DNA derived purely from one real Mamaearth video
   (no text), the resulting voice came back "sophisticated," "luxury,"
@@ -143,11 +163,11 @@ in that field if you diff them.
 
 ```bash
 USE_MOCK=false python3 -m evals.run_evals   # the 10 real-mode brand examples, incl. 4 multimodal (uses OPENAI_API_KEY, real cost — video examples do several vision calls each)
-USE_MOCK=true  python3 -m evals.run_evals   # the 4 mock-mode control-flow examples (free)
+USE_MOCK=true  python3 -m evals.run_evals   # the 5 mock-mode control-flow examples (free)
 ```
 
 Each invocation only runs examples matching its own mode (the other
-examples print as skipped) — run both to cover all 14. Examples 11-14
+examples print as skipped) — run both to cover all 15. Examples 11-14
 additionally require their source media present locally under
 `data/<brand>/instagram/` (see above) or they'll fail on missing
 files. Results land in `results/<id>.json`; structural pass/fail

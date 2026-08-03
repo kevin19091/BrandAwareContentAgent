@@ -46,10 +46,22 @@ def build_messages(node_name: str, output: dict) -> list[dict]:
     if node_name == "guardrail":
         passed = output["guardrail_passed"]
         summary = "**Passed.**" if passed else "**Rejected.** Stopping here — no retry on a guardrail failure."
-        return [agent_message(
+        messages = [agent_message(
             "Guardrail Check", summary,
             [("Result", "Passed" if passed else "Rejected"), ("Reason", output["guardrail_reason"])],
         )]
+        if passed:
+            brief_ok = output["brief_check_passed"]
+            brief_summary = (
+                "**Sufficient.**"
+                if brief_ok
+                else "**Insufficient.** Stopping here — please add what's missing and try again."
+            )
+            rows = [("Result", "Sufficient" if brief_ok else "Insufficient"), ("Reason", output["brief_check_reason"])]
+            if brief_ok:
+                rows.append(("Brand", output["brand_name"]))
+            messages.append(agent_message("Brief Completeness Check", brief_summary, rows))
+        return messages
 
     if node_name == "ingestion":
         source = output["ingestion_source"]
@@ -193,7 +205,7 @@ def start_pipeline(brief, brand_file, competitor_file, hitl_mode, history):
     for state, history in stream_graph(graph, state, thread_id, history):
         yield history, None, gr.update(visible=False), *hide_edit_fields()
 
-    if not state["guardrail_passed"]:
+    if not state["guardrail_passed"] or not state["brief_check_passed"]:
         yield history, None, gr.update(visible=False), *hide_edit_fields()
         return
 

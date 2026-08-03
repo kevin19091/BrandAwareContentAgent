@@ -1,5 +1,5 @@
 {
-  "raw_input": "trigger_eval_fail \u2014 launch a campaign encouraging customers to repair and re-wear existing gear instead of buying new.",
+  "raw_input": "trigger_eval_fail \u2014 launch a Patagonia campaign encouraging customers to repair and re-wear existing gear instead of buying new.",
   "session_assets": {
     "brand_guidelines": "[guidelines.txt]\nSource: Patagonia mission/values pages via BusinessModelAnalyst, FourWeekMBA,\nInstitute of Sustainability Studies, Purpose Economy, 2026 analyses.\n\nMission: \"We're in business to save our home planet\" (in place since 2018,\nreplacing earlier \"build the best product\" framing).\n\nCore values (refreshed 2022, 50th anniversary): Quality (absorbs the \"build\nthe best product\" heritage) and Environmentalism (carries the \"protect our\nhome planet\" thread) sit alongside a broader identity as environmental\nactivist and anti-consumerist \u2014 the brand positions itself as more than a\nretailer, closer to a movement.\n\nVoice: plainspoken, values-first, allergic to hype. Openly discusses its own\nenvironmental impact and corporate practices rather than only promoting\nproduct \u2014 this transparency is itself a trust-building device, not a\ndisclaimer bolted on.\n\nMarketing approach: Worn Wear (repair/resale instead of new purchases) and\nactivism-driven campaigns over conventional promotional pushes; growth is\nexpected to happen without compromising the mission. In 2022 the Chouinard\nfamily transferred ownership to a trust and nonprofit specifically to protect\nthis independence.\n\nPillars: environmental urgency, quality/durability over disposability,\nradical transparency, activism over advertising.\n",
     "competitor_refs": "[competitor_refs.txt]\nSource: The North Face brand strategy coverage; IIDE, BrandVM, Modern Retail,\nHype Insight, 2026.\n\nThe North Face repositioned in 2024-2026 around three core categories (snow,\nclimb, trail) after chasing adjacent categories too broadly, and wants to be\nseen as a \"democratic\" brand \u2014 quality technical gear for everyday use, not\njust elite athletes. Its SS26 \"Never Just a Hike\" campaign frames every\noutdoor trip as carrying a personal story, shifting emphasis from gear\nspecs to the meaning of the journey, backed by 200+ sponsored athletes\nincluding Alex Honnold.\n\nTechnique gap vs. Patagonia: The North Face's story is about the individual\nexperience of the outdoors (narrative, personal meaning); Patagonia's is\nabout the planet the outdoors depends on (activism, environmental urgency).\nPatagonia-adjacent copy should keep the planet-first framing distinct from\nThe North Face's personal-journey narrative style.\n"
@@ -7,6 +7,9 @@
   "hitl_mode": "auto",
   "guardrail_passed": true,
   "guardrail_reason": "no injection or out-of-scope signal detected",
+  "brief_check_passed": true,
+  "brief_check_reason": "brand name, objective, and audience all present",
+  "brand_name": "Mock Brand",
   "ingestion_source": "session",
   "brand_profile": {
     "voice": "energetic, inclusive, unapologetically bold",

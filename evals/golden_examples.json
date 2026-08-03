@@ -6,7 +6,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a new-season campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
+    "brief": "Launch a new-season Nike campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -28,7 +28,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "step",
-    "brief": "Launch a new-season campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
+    "brief": "Launch a new-season Nike campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -51,7 +51,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a campaign encouraging customers to repair and re-wear existing gear instead of buying new, timed to the start of the outdoor season.",
+    "brief": "Launch a Patagonia campaign encouraging customers to repair and re-wear existing gear instead of buying new, timed to the start of the outdoor season.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -73,7 +73,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
+    "brief": "Launch a Fabindia festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -95,7 +95,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "step",
-    "brief": "Launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
+    "brief": "Launch a Fabindia festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -118,7 +118,7 @@
     "scenario": "happy_path",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a campaign for new parents introducing a toxin-free baby-care range, emphasizing ingredient transparency and safety.",
+    "brief": "Launch a Mamaearth campaign for new parents introducing a toxin-free baby-care range, emphasizing ingredient transparency and safety.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -162,7 +162,7 @@
     "scenario": "eval_retry",
     "mode": "mock",
     "hitl_mode": "auto",
-    "brief": "trigger_eval_fail \u2014 launch a campaign encouraging customers to repair and re-wear existing gear instead of buying new.",
+    "brief": "trigger_eval_fail \u2014 launch a Patagonia campaign encouraging customers to repair and re-wear existing gear instead of buying new.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -185,7 +185,7 @@
     "scenario": "eval_escalate",
     "mode": "mock",
     "hitl_mode": "auto",
-    "brief": "trigger_escalate \u2014 launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them.",
+    "brief": "trigger_escalate \u2014 launch a Fabindia festive-season campaign celebrating handcrafted textiles and the artisans who make them.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "session",
@@ -208,7 +208,7 @@
     "scenario": "ingestion_fallback_none",
     "mode": "mock",
     "hitl_mode": "auto",
-    "brief": "Launch a campaign for new parents introducing a toxin-free baby-care range.",
+    "brief": "Launch a Mamaearth campaign for new parents introducing a toxin-free baby-care range.",
     "expected_criteria": {
       "guardrail_passed": true,
       "ingestion_source": "none",
@@ -226,7 +226,7 @@
     "scenario": "multimodal_ingestion",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a new-season campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
+    "brief": "Launch a new-season Nike campaign for young amateur athletes who feel judged for even trying, reframing effort itself as worth celebrating regardless of outcome.",
     "brand_guidelines_files": [
       "data/nike/instagram/DbJCoXguNF5.mp4"
     ],
@@ -248,7 +248,7 @@
     "scenario": "multimodal_ingestion",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a campaign encouraging customers to repair and re-wear existing gear instead of buying new, timed to the start of the outdoor season.",
+    "brief": "Launch a Patagonia campaign encouraging customers to repair and re-wear existing gear instead of buying new, timed to the start of the outdoor season.",
     "brand_guidelines_files": [
       "data/patagonia/instagram/DbgPZF6ErdD.mp4"
     ],
@@ -270,7 +270,7 @@
     "scenario": "multimodal_ingestion",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
+    "brief": "Launch a Fabindia festive-season campaign celebrating handcrafted textiles and the artisans who make them, for urban Indian shoppers rediscovering traditional craft.",
     "brand_guidelines_files": [
       "data/fabindia/instagram/DbDkqEcTAe7.mp4",
       "data/fabindia/instagram/DYuJWbkiYnd.jpg",
@@ -294,7 +294,7 @@
     "scenario": "multimodal_ingestion",
     "mode": "real",
     "hitl_mode": "auto",
-    "brief": "Launch a campaign for new parents introducing a toxin-free baby-care range, emphasizing ingredient transparency and safety.",
+    "brief": "Launch a Mamaearth campaign for new parents introducing a toxin-free baby-care range, emphasizing ingredient transparency and safety.",
     "brand_guidelines_files": [
       "data/mamaearth/instagram/DbQiyxJD8zD.mp4"
     ],
@@ -308,5 +308,24 @@
       "escalated": false
     },
     "review_focus": "Same brief as 06, but brand_guidelines comes from a real downloaded Mamaearth Instagram reel instead of text. Check whether the toxin-free/reassuring tone still comes through from visual analysis alone. Requires evals/data/mamaearth/instagram/DbQiyxJD8zD.mp4 locally, not committed."
+  },
+  {
+    "id": "15_insufficient_brief",
+    "brand": "N/A",
+    "tier": "n/a",
+    "scenario": "insufficient_brief",
+    "mode": "mock",
+    "hitl_mode": "auto",
+    "brief": "trigger_incomplete_brief \u2014 launch a campaign for young people.",
+    "brand_guidelines_files": [],
+    "competitor_refs_files": [],
+    "expected_criteria": {
+      "guardrail_passed": true,
+      "brief_check_passed": false,
+      "ingestion_source": null,
+      "eval_passed": null,
+      "escalated": false
+    },
+    "review_focus": "Mock mode for determinism \u2014 tests the brief-completeness branch of the combined guardrail node (no brand/product name in the brief). Pipeline must stop immediately after guardrail with brief_check_passed=false; ingestion and all downstream agents must never run."
   }
 ]
